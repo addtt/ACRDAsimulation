@@ -26,7 +26,6 @@ Server::~Server()
     std::cout << "Destructor called - server\n";
     cancelAndDelete(endRxEvent);
     cancelAndDelete(wndCompleted);
-//    delete pwndIterator;
     rxWnd.clear();
 }
 
@@ -34,8 +33,7 @@ void Server::initialize()
 {
     numHosts = par("numHosts");
 
-//    pwndIterator = new AcrdaWnd::Iterator(rxWnd);
-//    wndIterator = *pwndIterator;
+    wndIterator = AcrdaWnd::Iterator(rxWnd);
 
     endRxEvent = new cMessage("end-reception");
     nowReceiving = false;
@@ -65,28 +63,28 @@ void Server::handleMessage(cMessage *msg)
     {
         // Just display current window
         EV << "\n-------\nCurrent window:\n";
-//        wndIterator.init();
-//        while(!wndIterator.end()) {
-//            PacketInfo *p = (PacketInfo *) wndIterator++;
-//            EV << "hostID=" << p->getHostIdx() << "\t\t";
-//            EV << p->getStartTime() << " to " << p->getEndTime() << "\n";
-//        }
+        wndIterator.init();
+        while(!wndIterator.end()) {
+            PacketInfo p = *((PacketInfo *) wndIterator++); // What if we used PacketInfo *p = (PacketInfo *) wndIterator++
+            EV << "hostID=" << p.getHostIdx() << "\t\t";
+            EV << p.getStartTime() << " to " << p.getEndTime() << "\n";
+        }
         EV << "-------\n";
 
         // Perform IC iterations
         EV << "Interference Cancellation\n";
         for (int i=0; i < NUM_ITER; i++) {
 
-//            // Get the first resolvable (and not yet resolved) packet.
-//            PacketInfo *firstResPkt = (PacketInfo *) rxWnd.firstResolvable();
-//
-//            // Flag all replicas of the current packet (including itself) as resolved
-//            wndIterator.init();
-//            while(!wndIterator.end() && wndIterator.currElement() ) { //TODO: can this be simplified?
-//                PacketInfo *p = (PacketInfo *) wndIterator++;
-//                if (p->isReplicaOf(firstResPkt))
-//                    p->setResolved();
-//            }
+            // Get the first resolvable (and not yet resolved) packet.
+            PacketInfo *firstResPkt = (PacketInfo *) rxWnd.firstResolvable(); // TODO: How do we solve this???
+
+            // Flag all replicas of the current packet (including itself) as resolved
+            wndIterator.init();
+            while(!wndIterator.end() && wndIterator.currElement() ) { //TODO: can this be simplified?
+                PacketInfo *p = (PacketInfo *) wndIterator++;
+                if (p->isReplicaOf(firstResPkt))
+                    p->setResolved();
+            }
 
             //numResolvedProgressive[i] = rxWnd.getNumResolved();
             //EV << "   resolved packets: " << rxWnd.getNumResolved() << endl;

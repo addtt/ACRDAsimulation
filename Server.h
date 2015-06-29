@@ -28,8 +28,7 @@ class Server : public cSimpleModule
     const double WND_SIZE = 3;    // Window size in seconds
     const double WND_SHIFT = 1; // Window shift in seconds
     static const int NUM_ITER = 5;      // Number of iterations for IC
-//    AcrdaWnd::Iterator *pwndIterator = NULL;
-//    AcrdaWnd::Iterator wndIterator;  // TODO check this (it calls the default constructor in AcrdaWnd::Iterator)
+    AcrdaWnd::Iterator wndIterator;  // TODO check this: it calls the default constructor in AcrdaWnd::Iterator (?
 
     // state variables, event pointers
     bool nowReceiving;
