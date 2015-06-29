@@ -10,7 +10,6 @@
 
 #include "Host.h"
 #include "acrdaPkt.h"
-#include "algorithm"
 
 namespace acrda {
 
@@ -20,6 +19,8 @@ Define_Module(Host);
 Host::Host()
 {
     startFrameEvent = NULL;
+    server = NULL;
+
     //TODO: init other stuff to NULL...?
 }
 
@@ -34,9 +35,9 @@ Host::~Host()
         if (endTxEvent[i] != NULL)
             cancelAndDelete(endTxEvent[i]);
     }
-    for (int i=0; i<N_REP; i++)
-        if (framePkts[i] != NULL)
-            delete framePkts[i];
+//    for (int i=0; i<N_REP; i++)
+//        if (framePkts[i] != NULL)
+//            delete framePkts[i];
 }
 
 
@@ -128,8 +129,8 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            if (framePkts[i] != NULL)
-                delete framePkts[i];
+//            if (framePkts[i] != NULL)  // why does this result in malloc error?!
+//                delete framePkts[i];
             framePkts[i] = new AcrdaPkt(this->idx, pkCounter, pkname, replicaRelativeOffsets);
             framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }
@@ -155,7 +156,12 @@ void Host::handleMessage(cMessage *msg)
 
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
-        sendDirect(framePkts[replicaCounter], radioDelay, duration, server->gate("in"));
+        AcrdaPkt *outPkt = framePkts[replicaCounter]->dup();
+        sendDirect(outPkt, radioDelay, duration, server->gate("in"));
+        delete framePkts[replicaCounter];
+        //sendDirect(framePkts[replicaCounter], radioDelay, duration, server->gate("in"));
+//        cPacket *tmpmsg = new cPacket("packet");
+//        sendDirect(tmpmsg, radioDelay, duration, server->gate("in"));
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
         replicaCounter++; // number of replicas sent in this frame so far
