@@ -35,9 +35,6 @@ Host::~Host()
         if (endTxEvent[i] != NULL)
             cancelAndDelete(endTxEvent[i]);
     }
-//    for (int i=0; i<N_REP; i++)
-//        if (framePkts[i] != NULL)
-//            delete framePkts[i];
 }
 
 

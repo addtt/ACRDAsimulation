@@ -27,7 +27,7 @@ Server::~Server()
     cancelAndDelete(endRxEvent);
     cancelAndDelete(wndCompleted);
 //    delete pwndIterator;
-//    rxWnd.clear();
+    rxWnd.clear();
 }
 
 void Server::initialize()
@@ -94,7 +94,7 @@ void Server::handleMessage(cMessage *msg)
 
         // Shift the window
         double newWndLeft = simTime().dbl() + WND_SHIFT - WND_SIZE;
-//        rxWnd.shift(newWndLeft);  // Shift, defragment the internal array and update 'resolved' flags
+        rxWnd.shift(newWndLeft);  // Shift, defragment the internal array and update 'resolved' flags
         scheduleAt(simTime() + WND_SHIFT, wndCompleted); // TODO: should we delete msg before scheduling again?
     }
 
@@ -125,6 +125,8 @@ void Server::handleMessage(cMessage *msg)
         ASSERT(pkt->isReceptionStart());  // this packet object represents the start of the reception (at the server)
         simtime_t recvEndTime = simTime() + pkt->getDuration(); // end-of-reception time (at the server)
 
+        PacketInfo pkInfoObj = PacketInfo(pkt, simTime(), recvEndTime);
+        rxWnd.add((cObject *) &pkInfoObj); // TODO: is this right?
 //        PacketInfo *pkInfoObj = new PacketInfo(pkt, simTime(), recvEndTime);
 //        rxWnd.add((cObject *) pkInfoObj);
 

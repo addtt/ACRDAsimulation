@@ -35,7 +35,7 @@ class Server : public cSimpleModule
     bool nowReceiving;
     cMessage *endRxEvent;
     cMessage *wndCompleted;
-//    AcrdaWnd rxWnd;
+    AcrdaWnd rxWnd;
 
     long receiveCounter;
     simtime_t recvStartTime;
