@@ -33,6 +33,7 @@ int PacketInfo::getPkIdx() const {
 }
 
 void PacketInfo::setResolved(bool resolved) {
+    std::cout << "setting resolved...\n";
     this->resolved = resolved;
 }
 

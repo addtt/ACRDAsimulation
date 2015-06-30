@@ -64,8 +64,11 @@ void Server::handleMessage(cMessage *msg)
         // Just display current window
         EV << "\n-------\nCurrent window:\n";
         wndIterator.init();
+
         while(!wndIterator.end()) {
-            PacketInfo p = *((PacketInfo *) wndIterator++); // What if we used PacketInfo *p = (PacketInfo *) wndIterator++
+            PacketInfo *pp = reinterpret_cast<PacketInfo *> (wndIterator.currElement());
+            PacketInfo p = *pp;
+            wndIterator++;
             EV << "hostID=" << p.getHostIdx() << "\t\t";
             EV << p.getStartTime() << " to " << p.getEndTime() << "\n";
         }
@@ -76,12 +79,13 @@ void Server::handleMessage(cMessage *msg)
         for (int i=0; i < NUM_ITER; i++) {
 
             // Get the first resolvable (and not yet resolved) packet.
-            PacketInfo *firstResPkt = (PacketInfo *) rxWnd.firstResolvable(); // TODO: How do we solve this???
+            PacketInfo *firstResPkt = reinterpret_cast<PacketInfo *> (rxWnd.firstResolvable());
 
             // Flag all replicas of the current packet (including itself) as resolved
             wndIterator.init();
             while(!wndIterator.end() && wndIterator.currElement() ) { //TODO: can this be simplified?
-                PacketInfo *p = (PacketInfo *) wndIterator++;
+                PacketInfo *p = reinterpret_cast<PacketInfo *> (wndIterator.currElement());
+                wndIterator++;
                 if (p->isReplicaOf(firstResPkt))
                     p->setResolved();
             }
