@@ -66,7 +66,7 @@ void Server::handleMessage(cMessage *msg)
         wndIterator.init();
 
         while(!wndIterator.end()) {
-            PacketInfo *pp = reinterpret_cast<PacketInfo *> (wndIterator.currElement());
+            PacketInfo *pp = wndIterator.currElement();
             PacketInfo p = *pp;
             wndIterator++;
             EV << "hostID=" << p.getHostIdx() << "\t\t";
@@ -79,15 +79,15 @@ void Server::handleMessage(cMessage *msg)
         for (int i=0; i < NUM_ITER; i++) {
 
             // Get the first resolvable (and not yet resolved) packet.
-            PacketInfo *firstResPkt = reinterpret_cast<PacketInfo *> (rxWnd.firstResolvable());
+            PacketInfo *firstResPkt = rxWnd.firstResolvable();
 
             // Flag all replicas of the current packet (including itself) as resolved
             wndIterator.init();
             while(!wndIterator.end() && wndIterator.currElement() ) { //TODO: can this be simplified?
-                PacketInfo *p = reinterpret_cast<PacketInfo *> (wndIterator.currElement());
+                PacketInfo *p = wndIterator.currElement();
                 wndIterator++;
-                if (p->isReplicaOf(firstResPkt))
-                    p->setResolved();
+//                if (p->isReplicaOf(firstResPkt))
+//                    p->setResolved();
             }
 
             //numResolvedProgressive[i] = rxWnd.getNumResolved();
@@ -128,9 +128,7 @@ void Server::handleMessage(cMessage *msg)
         simtime_t recvEndTime = simTime() + pkt->getDuration(); // end-of-reception time (at the server)
 
         PacketInfo pkInfoObj = PacketInfo(pkt, simTime(), recvEndTime);
-        rxWnd.add((cObject *) &pkInfoObj); // TODO: is this right?
-//        PacketInfo *pkInfoObj = new PacketInfo(pkt, simTime(), recvEndTime);
-//        rxWnd.add((cObject *) pkInfoObj);
+        rxWnd.add(pkInfoObj.dup());
 
         if (!nowReceiving) {
             // Set the channel as busy, schedule endRxEvent.

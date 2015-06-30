@@ -12,7 +12,6 @@
 #include <sstream>
 #include "globals.h"
 #include "cexception.h"
-#include "PacketInfo.h"
 
 
 //Register_Class(AcrdaWnd);
@@ -62,11 +61,11 @@ void AcrdaWnd::Iterator::init(bool athead)
     }
 }
 
-cObject *AcrdaWnd::Iterator::operator++(int)
+PacketInfo *AcrdaWnd::Iterator::operator++(int)
 {
     if (k<0 || k>=array->size())
         return NULL;
-    cObject *obj = array->get(k);
+    PacketInfo *obj = array->get(k);
 
     k++;
     while (!array->get(k) && k<array->size())
@@ -74,11 +73,11 @@ cObject *AcrdaWnd::Iterator::operator++(int)
     return obj;
 }
 
-cObject *AcrdaWnd::Iterator::operator--(int)
+PacketInfo *AcrdaWnd::Iterator::operator--(int)
 {
     if (k<0 || k>=array->size())
         return NULL;
-    cObject *obj = array->get(k);
+    PacketInfo *obj = array->get(k);
     k--;
     while (!array->get(k) && k>=0)
         k--;
@@ -95,7 +94,7 @@ AcrdaWnd::AcrdaWnd(int dt) : cObject()
     firstfree = 0;
     last = -1;
     wndLeft = 0;
-    vect = new cObject *[capacity];
+    vect = new PacketInfo *[capacity];
     for (int i=0; i<capacity; i++)
         vect[i] = NULL;
 }
@@ -114,8 +113,8 @@ void AcrdaWnd::copy(const AcrdaWnd& other)
     last = other.last;
     wndLeft = other.wndLeft;
     delete [] vect;
-    vect = new cObject *[capacity];
-    memcpy(vect, other.vect, capacity * sizeof(cObject *));
+    vect = new PacketInfo *[capacity];
+    memcpy(vect, other.vect, capacity * sizeof(PacketInfo *));
 
     for (int i=0; i<=last; i++)
         if (vect[i])
@@ -128,7 +127,7 @@ void AcrdaWnd::clear()
 {
     for (int i=0; i<=last; i++)
     {
-        cObject *obj = vect[i];
+        PacketInfo *obj = vect[i];
         if (obj) {
             delete obj;
             vect[i] = NULL;  // this is not strictly necessary
@@ -144,7 +143,7 @@ void AcrdaWnd::setCapacity(int newCapacity)
     if (newCapacity < size())
         throw cRuntimeError(this,"setCapacity: new capacity %d cannot be less than current size %d", newCapacity,size());
 
-    cObject **newVect = new cObject *[newCapacity];
+    PacketInfo **newVect = new PacketInfo *[newCapacity];
     for (int i=0; i<=last; i++)
         newVect[i] = vect[i];
     for (int i=last+1; i<capacity; i++)
@@ -154,7 +153,7 @@ void AcrdaWnd::setCapacity(int newCapacity)
     capacity = newCapacity;
 }
 
-int AcrdaWnd::add(cObject *obj)
+int AcrdaWnd::add(PacketInfo *obj)
 {
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
@@ -171,9 +170,9 @@ int AcrdaWnd::add(cObject *obj)
     }
     else // must allocate bigger vector
     {
-        cObject **v = new cObject *[capacity+delta];
-        memcpy(v, vect, sizeof(cObject*)*capacity );
-        memset(v+capacity, 0, sizeof(cObject*)*delta);
+        PacketInfo **v = new PacketInfo *[capacity+delta];
+        memcpy(v, vect, sizeof(PacketInfo*)*capacity );
+        memset(v+capacity, 0, sizeof(PacketInfo*)*delta);
         delete [] vect;
         vect = v;
         vect[capacity] = obj;
@@ -184,7 +183,7 @@ int AcrdaWnd::add(cObject *obj)
     return retval;
 }
 
-int AcrdaWnd::addAt(int m, cObject *obj, bool overwrite)
+int AcrdaWnd::addAt(int m, PacketInfo *obj, bool overwrite)
 {
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
@@ -204,9 +203,9 @@ int AcrdaWnd::addAt(int m, cObject *obj, bool overwrite)
     }
     else // must allocate bigger vector
     {
-        cObject **v = new cObject *[m+delta];
-        memcpy(v, vect, sizeof(cObject*)*capacity);
-        memset(v+capacity, 0, sizeof(cObject*)*(m+delta-capacity));
+        PacketInfo **v = new PacketInfo *[m+delta];
+        memcpy(v, vect, sizeof(PacketInfo*)*capacity);
+        memset(v+capacity, 0, sizeof(PacketInfo*)*(m+delta-capacity));
         delete [] vect;
         vect = v;
         vect[m] = obj;
@@ -218,7 +217,7 @@ int AcrdaWnd::addAt(int m, cObject *obj, bool overwrite)
     return m;
 }
 
-int AcrdaWnd::find(cObject *obj) const
+int AcrdaWnd::find(PacketInfo *obj) const
 {
     int i;
     for (i=0; i<=last; i++)
@@ -227,7 +226,7 @@ int AcrdaWnd::find(cObject *obj) const
     return -1;
 }
 
-cObject *AcrdaWnd::get(int m)
+PacketInfo *AcrdaWnd::get(int m)
 {
     if (m>=0 && m<=last)
         return vect[m];
@@ -235,7 +234,7 @@ cObject *AcrdaWnd::get(int m)
         return NULL;
 }
 
-const cObject *AcrdaWnd::get(int m) const
+const PacketInfo *AcrdaWnd::get(int m) const
 {
     if (m>=0 && m<=last)
         return vect[m];
@@ -243,7 +242,7 @@ const cObject *AcrdaWnd::get(int m) const
         return NULL;
 }
 
-cObject *AcrdaWnd::remove(cObject *obj)
+PacketInfo *AcrdaWnd::remove(PacketInfo *obj)
 {
     if (!obj) return NULL;
 
@@ -253,12 +252,12 @@ cObject *AcrdaWnd::remove(cObject *obj)
     return remove(m);
 }
 
-cObject *AcrdaWnd::remove(int m)
+PacketInfo *AcrdaWnd::remove(int m)
 {
     if (m<0 || m>last || vect[m]==NULL)
         return NULL;
 
-    cObject *obj = vect[m]; vect[m] = NULL;
+    PacketInfo *obj = vect[m]; vect[m] = NULL;
     firstfree = std::min(firstfree, m);
     if (m==last)
         do {
@@ -309,7 +308,7 @@ int AcrdaWnd::firstResolvableIndex()
     return -1;
 }
 
-cObject *AcrdaWnd::firstResolvable()
+PacketInfo *AcrdaWnd::firstResolvable()
 {
     return this->get(firstResolvableIndex());
 }
@@ -319,7 +318,7 @@ int AcrdaWnd::getNumResolved() //based on flags
 {
     int nres = 0;
     for (int i=0; i<=last; i++)
-        if (vect[i] && ((PacketInfo *) vect[i])->isResolved())
+        if (vect[i] && vect[i]->isResolved())
             nres++;
     return nres;
 }

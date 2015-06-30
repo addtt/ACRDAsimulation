@@ -10,6 +10,7 @@
 
 #include <cobject.h>
 #include <omnetpp.h>
+#include "PacketInfo.h"
 
 class AcrdaWnd : cObject {
 
@@ -44,7 +45,7 @@ public:
          * Returns the current object, or NULL if the iterator is not
          * at a valid position.
          */
-        cObject *currElement()  {return array->get(k);}
+        PacketInfo *currElement()  {return array->get(k);}
 
         int currIndex()  {return k;}
 
@@ -61,7 +62,7 @@ public:
          * If elements are added or removed during interation, the behaviour
          * is undefined.
          */
-        cObject *operator++(int);
+        PacketInfo *operator++(int);
 
         /**
          * Returns the current object, then moves the iterator to the previous item.
@@ -71,11 +72,11 @@ public:
          * If elements are added or removed during interation, the behaviour
          * is undefined.
          */
-        cObject *operator--(int);
+        PacketInfo *operator--(int);
     };
 
 private:
-    cObject **vect;    // vector of objects
+    PacketInfo **vect;    // vector of objects
     int capacity;      // allocated size of vect[]
     int delta;         // if needed, grows by delta
     int firstfree;     // first free position in vect[]
@@ -135,14 +136,14 @@ public:
      * will be stored. The return value is the object's index in the
      * array.
      */
-    int add(cObject *obj);
+    int add(PacketInfo *obj);
 
     /**
      * Inserts the object into the array at the given position. If
      * the position is occupied, the function throws a cRuntimeError.
      * The return value is the object's index in the array.
      */
-    int addAt(int m, cObject *obj, bool overwrite=false);
+    int addAt(int m, PacketInfo *obj, bool overwrite=false);
 
 
     /**
@@ -150,35 +151,35 @@ public:
      * the index of the first match. If the object was not found, -1 is
      * returned.
      */
-    int find(cObject *obj) const;
+    int find(PacketInfo *obj) const;
 
 
     /**
      * Returns reference to the mth object in the array. Returns NULL
      * if the mth position is not used.
      */
-    cObject *get(int m);
+    PacketInfo *get(int m);
 
 
     /**
      * Returns reference to the mth object in the array. Returns NULL
      * if the mth position is not used.
      */
-    const cObject *get(int m) const;
+    const PacketInfo *get(int m) const;
 
 
     /**
      * The same as get(int). With the indexing operator,
      * AcrdaWnd can be used as a vector.
      */
-    cObject *operator[](int m)  {return get(m);}
+    PacketInfo *operator[](int m)  {return get(m);}
 
 
     /**
      * The same as get(int). With the indexing operator,
      * AcrdaWnd can be used as a vector.
      */
-    const cObject *operator[](int m) const  {return get(m);}
+    const PacketInfo *operator[](int m) const  {return get(m);}
 
 
     /**
@@ -192,7 +193,7 @@ public:
      * container. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(int m);
+    PacketInfo *remove(int m);
 
 
     /**
@@ -201,7 +202,7 @@ public:
      * found, NULL is returned. (If the object was owned by the container, drop()
      * is called.)
      */
-    cObject *remove(cObject *obj);
+    PacketInfo *remove(PacketInfo *obj);
     //@}
 
 
@@ -209,7 +210,7 @@ public:
 
     int firstResolvableIndex();
 
-    cObject *firstResolvable();
+    PacketInfo *firstResolvable();
 
     void updateAllResolvedFlags();
 

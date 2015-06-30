@@ -15,6 +15,7 @@ class PacketInfo {
 
 public:
     PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime);
+    PacketInfo(int hostIdx, int pkIdx, double snr, double *replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime);
     virtual ~PacketInfo();
     int getHostIdx() const;
     int getPkIdx() const;
@@ -24,6 +25,7 @@ public:
     simtime_t getStartTime() const;
     simtime_t getEndTime() const;
     bool isReplicaOf(PacketInfo *p);
+    PacketInfo *dup();
 
 
 private:
