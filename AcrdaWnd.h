@@ -168,24 +168,6 @@ public:
     const PacketInfo *get(int m) const;
 
 
-    /**
-     * The same as get(int). With the indexing operator,
-     * AcrdaWnd can be used as a vector.
-     */
-    PacketInfo *operator[](int m)  {return get(m);}
-
-
-    /**
-     * The same as get(int). With the indexing operator,
-     * AcrdaWnd can be used as a vector.
-     */
-    const PacketInfo *operator[](int m) const  {return get(m);}
-
-
-    /**
-     * Returns true if position m is used in the array, otherwise false.
-     */
-    bool exist(int m) const  {return m>=0 && m<=last && vect[m]!=NULL;}
 
 
     /**

@@ -7,9 +7,9 @@
 
 #include <PacketInfo.h>
 
-PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime) {
-    this->startTime = startTime;
-    this->endTime = endTime;
+PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime)
+    : startTime(startTime), endTime(endTime)
+{
     hostIdx = pkt->getHostIdx();
     pkIdx = pkt->getPkIdx();
     snr = pkt->getSnr();
@@ -17,7 +17,7 @@ PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime) {
     resolved = false;
 }
 
-PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, double *replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime) {
+PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime) {
     this->startTime = startTime;
     this->endTime = endTime;
     this->hostIdx = hostIdx;
@@ -26,6 +26,7 @@ PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, double *replicaOffset
     this->replicaOffsets = replicaOffsets;
     this->resolved = resolved;
 }
+
 
 PacketInfo::~PacketInfo() {
 }
@@ -43,7 +44,6 @@ int PacketInfo::getPkIdx() const {
 }
 
 void PacketInfo::setResolved(bool resolved) {
-    std::cout << "setting resolved...\n";
     this->resolved = resolved;
 }
 

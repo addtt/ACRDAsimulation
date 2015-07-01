@@ -119,15 +119,13 @@ void Host::handleMessage(cMessage *msg)
 
             // Take all replica offsets except the current one, center them around the current one
             // TODO: We don't need this
-            double replicaRelativeOffsets[N_REP-1];
+            std::vector<double> replicaRelativeOffsets(N_REP-1);
             for (int j=0; j<N_REP-1; j++) {
                 int shiftIdx = (j>=i) ? 1 : 0;
                 replicaRelativeOffsets[j] = (replicaLocs[j + shiftIdx] - replicaLocs[i]) * T_PKT_MAX;
             }
 
             // Create the current packet
-//            if (framePkts[i] != NULL)  // why does this result in malloc error?!
-//                delete framePkts[i];
             framePkts[i] = new AcrdaPkt(this->idx, pkCounter, pkname, replicaRelativeOffsets);
             framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }

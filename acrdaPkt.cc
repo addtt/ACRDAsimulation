@@ -7,12 +7,12 @@ AcrdaPkt::AcrdaPkt(const AcrdaPkt& pkt) : cPacket(pkt)
     copy(pkt);
 }
 
-AcrdaPkt::AcrdaPkt(int hostIdx, int pkIdx, const char *msg, double replicaOffs[], double pktSnr) : cPacket(msg)
+AcrdaPkt::AcrdaPkt(int hostIdx, int pkIdx, const char *msg, std::vector<double> replicaOffsets, double snr) : cPacket(msg)
 {
-    snr = pktSnr;
-    replicaOffsets = replicaOffs;
+    this->snr = snr;
     this->hostIdx = hostIdx;
     this->pkIdx = pkIdx;
+    this->replicaOffsets = replicaOffsets;
 }
 
 AcrdaPkt::~AcrdaPkt()
@@ -21,8 +21,13 @@ AcrdaPkt::~AcrdaPkt()
 
 void AcrdaPkt::copy(const AcrdaPkt& pkt)
 {
-    snr = pkt.snr;
-    replicaOffsets = pkt.replicaOffsets;
-    hostIdx = pkt.hostIdx;
-    pkIdx = pkt.pkIdx;
+    snr = pkt.getSnr();
+    hostIdx = pkt.getHostIdx();
+    pkIdx = pkt.getPkIdx();
+    replicaOffsets = pkt.getReplicaOffs();
+}
+
+std::vector<double> AcrdaPkt::getReplicaOffs() const
+{
+    return replicaOffsets;
 }

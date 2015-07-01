@@ -155,6 +155,8 @@ void AcrdaWnd::setCapacity(int newCapacity)
 
 int AcrdaWnd::add(PacketInfo *obj)
 {
+    std::cout << simTime() << "\n";
+    std::cout.flush();
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
 
@@ -193,7 +195,7 @@ int AcrdaWnd::addAt(int m, PacketInfo *obj, bool overwrite)
         if (m<0)
             throw cRuntimeError(this,"addAt(): negative position %d",m);
         if (vect[m]!=NULL && !overwrite)
-            throw cRuntimeError(this,"addAt(): position %d already used",m);
+            throw cRuntimeError(this,"addAt(): position %d already used",m);  // if we overwrite this, why shouldn't we delete the old packet?
         vect[m] = obj;
         last = std::max(m,last);
         if (firstfree==m)
@@ -351,6 +353,9 @@ void AcrdaWnd::updateAllResolvedFlags()
 
 void AcrdaWnd::shift(double newWndLeft)
 {
+    std::cout << "shift(): " << simTime() << endl;
+    std::cout.flush();
+
     ASSERT(newWndLeft >= wndLeft.dbl());
     wndLeft = newWndLeft;
 

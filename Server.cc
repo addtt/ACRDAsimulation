@@ -76,23 +76,25 @@ void Server::handleMessage(cMessage *msg)
 
         // Perform IC iterations
         EV << "Interference Cancellation\n";
-        for (int i=0; i < NUM_ITER; i++) {
-
-            // Get the first resolvable (and not yet resolved) packet.
-            PacketInfo *firstResPkt = rxWnd.firstResolvable();
-
-            // Flag all replicas of the current packet (including itself) as resolved
-            wndIterator.init();
-            while(!wndIterator.end() && wndIterator.currElement() ) { //TODO: can this be simplified?
-                PacketInfo *p = wndIterator.currElement();
-                wndIterator++;
-//                if (p->isReplicaOf(firstResPkt))
+//        for (int i=0; i < NUM_ITER; i++) {
+//
+//            // Get the first resolvable (and not yet resolved) packet.
+//            PacketInfo *firstResPkt = rxWnd.firstResolvable();
+//
+//            // Flag all replicas of the current packet (including itself) as resolved
+//            wndIterator.init();
+//            while(!wndIterator.end() && wndIterator.currElement()!=nullptr ) { //TODO: can this be simplified?
+//                PacketInfo *p = wndIterator.currElement();
+//                if (p->isReplicaOf(firstResPkt)) {
 //                    p->setResolved();
-            }
-
-            //numResolvedProgressive[i] = rxWnd.getNumResolved();
-            //EV << "   resolved packets: " << rxWnd.getNumResolved() << endl;
-        }
+//                }
+//                wndIterator++;
+//
+//            }
+//
+//            //numResolvedProgressive[i] = rxWnd.getNumResolved();
+//            //EV << "   resolved packets: " << rxWnd.getNumResolved() << endl;
+//        }
 
         // Shift the window
         double newWndLeft = simTime().dbl() + WND_SHIFT - WND_SIZE;
@@ -128,7 +130,8 @@ void Server::handleMessage(cMessage *msg)
         simtime_t recvEndTime = simTime() + pkt->getDuration(); // end-of-reception time (at the server)
 
         PacketInfo pkInfoObj = PacketInfo(pkt, simTime(), recvEndTime);
-        rxWnd.add(pkInfoObj.dup());
+        pkInfoObj.setResolved();
+//        rxWnd.add(pkInfoObj);
 
         if (!nowReceiving) {
             // Set the channel as busy, schedule endRxEvent.
