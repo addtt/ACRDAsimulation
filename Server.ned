@@ -28,6 +28,9 @@ simple Server
         @statistic[collidedFrames](source="sum(collision)"; record=last; title="collided frames");
         
         int numHosts;
+        double wndSize;
+        double wndShift;
+        int numIterIC;
     gates:
         input in @directIn;
 }

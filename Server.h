@@ -24,10 +24,10 @@ namespace acrda {
 class Server : public cSimpleModule
 {
   private:
-    int numHosts;
-    const double WND_SIZE = 3;    // Window size in seconds
-    const double WND_SHIFT = 1; // Window shift in seconds
-    static const int NUM_ITER = 5;      // Number of iterations for IC
+    int numHosts;       // Number of hosts
+    double wndSize;    // Window size in seconds
+    double wndShift;   // Window shift in seconds
+    int numIterIC;       // Number of iterations for IC
 
     // state variables, event pointers
     bool nowReceiving;

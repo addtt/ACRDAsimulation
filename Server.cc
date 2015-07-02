@@ -34,6 +34,9 @@ Server::~Server()
 void Server::initialize()
 {
     numHosts = par("numHosts");
+    wndSize = par("wndSize");
+    wndShift = par("wndShift");
+    numIterIC = par("numIterIC");
 
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
@@ -48,7 +51,7 @@ void Server::initialize()
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
 
-    scheduleAt(WND_SIZE, wndCompleted);
+    scheduleAt(wndSize, wndCompleted);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -67,7 +70,7 @@ void Server::handleMessage(cMessage *msg)
 
         // Perform IC iterations
         EV << "Interference Cancellation\n";
-        for (int i=0; i < NUM_ITER; i++) {
+        for (int i=0; i < numIterIC; i++) {
 
             // Get the first resolvable (and not yet resolved) packet.
             PacketInfo firstResPkt;
@@ -94,11 +97,11 @@ void Server::handleMessage(cMessage *msg)
         }
 
         // Shift the window
-        double newWndLeft = simTime().dbl() + WND_SHIFT - WND_SIZE;
+        double newWndLeft = simTime().dbl() + wndShift - wndSize;
         rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags)
 
         // Schedule next window shift
-        scheduleAt(simTime() + WND_SHIFT, wndCompleted);
+        scheduleAt(simTime() + wndShift, wndCompleted);
     }
 
 
