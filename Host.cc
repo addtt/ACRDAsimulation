@@ -10,7 +10,6 @@
 
 #include "Host.h"
 #include "acrdaPkt.h"
-#include "algorithm"
 
 namespace acrda {
 
@@ -20,6 +19,8 @@ Define_Module(Host);
 Host::Host()
 {
     startFrameEvent = NULL;
+    server = NULL;
+
     //TODO: init other stuff to NULL...?
 }
 
@@ -27,6 +28,7 @@ Host::Host()
 Host::~Host()
 {
     std::cout << "Destructor called - host\n";
+    std::cout.flush();
     cancelAndDelete(startFrameEvent);
     for (int i=0; i<N_REP; i++) {
         if (startTxEvent[i] != NULL)
@@ -34,9 +36,6 @@ Host::~Host()
         if (endTxEvent[i] != NULL)
             cancelAndDelete(endTxEvent[i]);
     }
-    for (int i=0; i<N_REP; i++)
-        if (framePkts[i] != NULL)
-            delete framePkts[i];
 }
 
 
@@ -121,15 +120,13 @@ void Host::handleMessage(cMessage *msg)
 
             // Take all replica offsets except the current one, center them around the current one
             // TODO: We don't need this
-            double replicaRelativeOffsets[N_REP-1];
+            std::vector<double> replicaRelativeOffsets(N_REP-1);
             for (int j=0; j<N_REP-1; j++) {
                 int shiftIdx = (j>=i) ? 1 : 0;
                 replicaRelativeOffsets[j] = (replicaLocs[j + shiftIdx] - replicaLocs[i]) * T_PKT_MAX;
             }
 
             // Create the current packet
-            if (framePkts[i] != NULL)
-                delete framePkts[i];
             framePkts[i] = new AcrdaPkt(this->idx, pkCounter, pkname, replicaRelativeOffsets);
             framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }
@@ -155,7 +152,12 @@ void Host::handleMessage(cMessage *msg)
 
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
-        sendDirect(framePkts[replicaCounter], radioDelay, duration, server->gate("in"));
+        AcrdaPkt *outPkt = framePkts[replicaCounter]->dup();
+        sendDirect(outPkt, radioDelay, duration, server->gate("in"));
+        delete framePkts[replicaCounter];
+        //sendDirect(framePkts[replicaCounter], radioDelay, duration, server->gate("in"));
+//        cPacket *tmpmsg = new cPacket("packet");
+//        sendDirect(tmpmsg, radioDelay, duration, server->gate("in"));
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
         replicaCounter++; // number of replicas sent in this frame so far
