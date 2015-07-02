@@ -14,6 +14,7 @@
 class PacketInfo {
 
 public:
+    PacketInfo() {};
     PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime);
     PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime);
     virtual ~PacketInfo();

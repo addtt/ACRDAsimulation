@@ -28,6 +28,7 @@ Host::Host()
 Host::~Host()
 {
     std::cout << "Destructor called - host\n";
+    std::cout.flush();
     cancelAndDelete(startFrameEvent);
     for (int i=0; i<N_REP; i++) {
         if (startTxEvent[i] != NULL)
