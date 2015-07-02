@@ -8,7 +8,7 @@
 #include <PacketInfo.h>
 
 PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime)
-    : startTime(startTime), endTime(endTime)
+    : startTime{startTime}, endTime{endTime}
 {
     hostIdx = pkt->getHostIdx();
     pkIdx = pkt->getPkIdx();
@@ -17,15 +17,11 @@ PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime)
     resolved = false;
 }
 
-PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime) {
-    this->startTime = startTime;
-    this->endTime = endTime;
-    this->hostIdx = hostIdx;
-    this->pkIdx = pkIdx;
-    this->snr = snr;
-    this->replicaOffsets = replicaOffsets;
-    this->resolved = resolved;
-}
+PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> replicaOffsets,
+        bool resolved, simtime_t startTime, simtime_t endTime)
+    : hostIdx{hostIdx}, pkIdx{pkIdx}, snr{snr}, replicaOffsets{replicaOffsets},
+      resolved{resolved}, startTime{startTime}, endTime{endTime}
+{}
 
 
 PacketInfo::~PacketInfo() {
@@ -60,7 +56,3 @@ bool PacketInfo::isReplicaOf(PacketInfo *other)
     return (this->getHostIdx() == other->getHostIdx() && this->getPkIdx() == other->getPkIdx());
 }
 
-PacketInfo *PacketInfo::dup()
-{
-    return new PacketInfo(hostIdx, pkIdx, snr, replicaOffsets, resolved, startTime, endTime);
-}

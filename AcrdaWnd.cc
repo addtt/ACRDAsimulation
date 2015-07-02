@@ -7,18 +7,13 @@
 
 #include <AcrdaWnd.h>
 
-#include <string.h>  // memcmp, memcpy, memset
-#include <algorithm>  // min, max
+#include <string.h>
+#include <algorithm>
 #include <sstream>
 #include "globals.h"
 #include "cexception.h"
 #include <sstream>
 
-
-AcrdaWnd::AcrdaWnd()
-{
-
-}
 
 AcrdaWnd::~AcrdaWnd()
 {

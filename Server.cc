@@ -18,7 +18,8 @@ Define_Module(Server);
 
 Server::Server()
 {
-    endRxEvent = NULL;
+    endRxEvent = nullptr;
+    wndCompleted = nullptr;
 }
 
 Server::~Server()
@@ -35,10 +36,10 @@ void Server::initialize()
     numHosts = par("numHosts");
 
     endRxEvent = new cMessage("end-reception");
-    nowReceiving = false;
+    wndCompleted = new cMessage("window-completed");
 
     gate("in")->setDeliverOnReceptionStart(true);
-
+    nowReceiving = false;
     receiveCounter = 0;
 
     receiveBeginSignal = registerSignal("receiveBegin");
@@ -47,7 +48,6 @@ void Server::initialize()
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
 
-    wndCompleted = new cMessage("window-completed");
     scheduleAt(WND_SIZE, wndCompleted);
 
     if (ev.isGUI())
@@ -58,9 +58,11 @@ void Server::initialize()
 void Server::handleMessage(cMessage *msg)
 {
 
+    // --- Completed window
+
     if (msg==wndCompleted)
     {
-        // Just display current window
+        // Display current window
         EV << rxWnd.toString();
 
         // Perform IC iterations
@@ -72,14 +74,14 @@ void Server::handleMessage(cMessage *msg)
             try {
                 firstResPkt = rxWnd.firstResolvable();
             }
-            catch (const std::out_of_range& oor) {
+            catch (const std::out_of_range& oor) { // TODO check this
                 break;
                 //std::cerr << "Out of Range error: " << oor.what() << '\n';
                 //std::cerr << simTime() << endl;
                 //exit(1);
             }
 
-            // Flag all replicas of the current packet (including itself) as resolved
+            // Flag all replicas of that packet (including itself) as resolved
             for (int j=0; j<rxWnd.size(); j++) {
                 PacketInfo p = rxWnd.get(j);
                 if (p.isReplicaOf(& firstResPkt)) {
@@ -88,16 +90,19 @@ void Server::handleMessage(cMessage *msg)
                 }
             }
 
-            //numResolvedProgressive[i] = rxWnd.getNumResolved();
             EV << "   resolved packets: " << rxWnd.getNumResolved() << endl;
         }
 
         // Shift the window
         double newWndLeft = simTime().dbl() + WND_SHIFT - WND_SIZE;
-        rxWnd.shift(newWndLeft);  // Shift and update 'resolved' flags
+        rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags)
+
+        // Schedule next window shift
         scheduleAt(simTime() + WND_SHIFT, wndCompleted);
     }
 
+
+    // --- End of reception: just for statistics
 
     else if (msg==endRxEvent)
     {
@@ -107,8 +112,6 @@ void Server::handleMessage(cMessage *msg)
 
         // update network graphics
         if (ev.isGUI()) {
-            //getDisplayString().setTagArg("i2",0,"x_off");
-            //getDisplayString().setTagArg("t",0,"");
             getDisplayString().setTagArg("i2",0,"x_yellow");
             getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(receiveCounter)).c_str() );
             getDisplayString().setTagArg("t",2,"#808000");
@@ -116,7 +119,7 @@ void Server::handleMessage(cMessage *msg)
     }
 
 
-    // ------ Received a packet from a host (start of reception)
+    // --- Received a packet from a host (start of reception)
 
     else
     {
@@ -151,6 +154,8 @@ void Server::handleMessage(cMessage *msg)
         delete pkt;
     }
 }
+
+
 
 void Server::finish()
 {

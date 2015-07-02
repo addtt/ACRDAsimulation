@@ -26,15 +26,14 @@ public:
     simtime_t getStartTime() const;
     simtime_t getEndTime() const;
     bool isReplicaOf(PacketInfo *p);
-    PacketInfo *dup();
 
 
 private:
-    double snr;
-    bool resolved;
     int hostIdx;
     int pkIdx;
+    double snr;
     std::vector<double> replicaOffsets;
+    bool resolved;
     simtime_t startTime;
     simtime_t endTime;
 

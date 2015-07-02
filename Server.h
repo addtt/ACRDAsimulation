@@ -39,8 +39,6 @@ class Server : public cSimpleModule
     simtime_t recvStartTime;
     enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
 
-    //int numResolvedProgressive[NUM_ITER];
-
     // statistics
     simsignal_t receiveBeginSignal;
     simsignal_t receiveSignal;

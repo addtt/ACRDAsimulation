@@ -27,7 +27,7 @@ public:
     /**
      * Constructor.
      */
-    explicit AcrdaWnd();
+    explicit AcrdaWnd() {}
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -40,44 +40,39 @@ public:
     //@{
 
     /**
-     * Returns the index of last used position+1. This only equals the
-     * number of contained objects if there are no "holes" (NULL elements)
-     * in the array.
+     * Returns the size of the window.
      */
     int size() const {return vect.size();}
 
     /**
-     * Makes the container empty. Contained objects that were owned by the
-     * container will be deleted.
+     * Makes the container empty.
      */
     void clear();
 
 
     /**
-     * Inserts the object into the array. Only the pointer of the object
-     * will be stored. The return value is the object's index in the
-     * array.
+     * Appends the object into the window.
      */
     void add(PacketInfo obj);
 
     /**
-     * Inserts the object into the array at the given position. If
-     * the position is occupied, the function throws a cRuntimeError.
-     * The return value is the object's index in the array.
+     * Inserts the object into the window at the given position. If
+     * the position is occupied, the function overwrites the object.
+     * If the index is not valid, an out of bounds exception is thrown.
      */
     void addAt(int m, PacketInfo obj);
 
 
     /**
-     * Returns reference to the mth object in the array. Returns NULL
-     * if the mth position is not used.
+     * Returns the m-th object in the window. If the index is not valid,
+     * an out of bounds exception is thrown.
      */
     PacketInfo get(int m);
 
 
     /**
-     * Returns reference to the mth object in the array. Returns NULL
-     * if the mth position is not used.
+     * Returns the m-th object in the window. If the index is not valid,
+     * an out of bounds exception is thrown.
      */
     const PacketInfo get(int m) const;
 
