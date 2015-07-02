@@ -51,9 +51,13 @@ const PacketInfo AcrdaWnd::get(int m) const
 // -----------------------------------------------------
 
 
-void AcrdaWnd::updateAllResolvedFlags()
+
+
+std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
 {
-    std::vector<bool> newResolvedFlags(size());
+    std::vector<int> newResolvableIndices;
+    newResolvableIndices.reserve(size());
+
     for (int i=0; i<vect.size(); i++) {
         PacketInfo p = vect[i];
 
@@ -81,50 +85,31 @@ void AcrdaWnd::updateAllResolvedFlags()
             }
         }
 
-        // Remember that it is resolvable, but do not change its flag until the end of the algorithm
-        newResolvedFlags[i] = isThisResolvable;
+        if (isThisResolvable) {
+            newResolvableIndices.push_back(i);
+            if (firstOnly)
+                break;
+        }
     }
 
-    for (int i=0; i<size(); i++) // TODO: check if we can set the flag directly on the PacketInfo object.
-        vect[i].setResolved(newResolvedFlags[i]);
-
+    newResolvableIndices.shrink_to_fit();
+    return newResolvableIndices;
 }
+
+
+void AcrdaWnd::updateAllResolvedFlags()
+{
+    std::vector<int> newResIdx = getNewResolvableIndices();
+    for (int i=0; i<newResIdx.size(); i++)
+        vect[newResIdx[i]].setResolved();
+}
+
 
 int AcrdaWnd::firstResolvableIndex()
 {
-    for (int i=0; i<vect.size(); i++) {
-        PacketInfo p = vect[i];
-
-        // If already resolved, skip to the next packet.
-        if (p.isResolved())
-            continue;
-
-        simtime_t start = p.getStartTime();
-        simtime_t end   = p.getEndTime();
-
-        // Assume it to be resolvable
-        bool resolvable = true;
-        for (int j=0; j<vect.size() && resolvable; j++) {
-            if (j!=i) {
-                PacketInfo p2 = vect[j];
-                if (p2.isResolved())  // if the candidate conflicting pkt is resolved, it cannot collide
-                    continue;
-                simtime_t start2 = p2.getStartTime();
-                simtime_t end2   = p2.getEndTime();
-
-                // If p2 and p are not resolved and are colliding, then they cannot be resolved for now,
-                // so we skip to the next packet i (outer for loop).
-                if ((start <= start2 && start2 < end) || (start < end2 && end2 <= end))
-                    resolvable = false;
-            }
-        }
-
-        // This is the first resolvable packet in the window array!
-        if (resolvable)
-            return i;
-    }
-
-    return -1;
+    std::vector<int> newResIdx = getNewResolvableIndices(true);
+    bool isThereNewResIdx = (newResIdx.size() > 0);
+    return isThereNewResIdx ? newResIdx[0] : (-1);
 }
 
 PacketInfo AcrdaWnd::firstResolvable()

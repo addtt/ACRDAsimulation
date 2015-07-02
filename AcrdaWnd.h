@@ -78,19 +78,55 @@ public:
 
     // -----------------------------------------------------
 
+
+    /**
+     * Checks which packets in the window are not resolved but can be immediately resolved
+     * (because they only overlap with already resolved packets). It returns a vector with
+     * the indices of all such packets. If no such packet exists, i.e. all packets collide
+     * with some other non-resolved packet, the output vector has size 0.
+     *
+     * If the parameter firstOnly is true, then the algorithm stops as soon as one new
+     * resolvable packet is found, and the returned vector has size 1 at most. This parameter
+     * is false by default.
+     */
+    std::vector<int> getNewResolvableIndices(bool firstOnly=false);
+
+
     /**
      * Visits all packets in the current window and flags as resolvable all packets
      * that are currently resolvable, i.e. that do not collide with other non-resolved
      * packets.
+     *
+     * It checks resolvable packets using the method getNewResolvableIndices(), and flags
+     * them as resolved.
      */
     void updateAllResolvedFlags();
 
+
+    /**
+     * Returns the index of the first resolvable (and not yet resolved) packet, i.e. the
+     * first packet that does not collide with non-resolved packets. It returns -1 if no
+     * such packet exists.
+     */
     int firstResolvableIndex();
 
+
+    /**
+     * Returns the fist resolvable (and not yet resolved) packet, i.e. the first packet that
+     * does not collide with non-resolved packets. It throws an exception if no such packet
+     * exists.
+     */
     PacketInfo firstResolvable();
 
+
+    /**
+     * Loops through all resolved packets in the window, and flags all of its replicas as resolved.
+     */
     void updateResolvedFlagsOfReplicas();
 
+    /**
+     * Returns the number of packets in the window that are flagged as resolved.
+     */
     int getNumResolved();
 
     void shift(double newWndLeft);
