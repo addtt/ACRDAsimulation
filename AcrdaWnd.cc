@@ -51,6 +51,45 @@ const PacketInfo AcrdaWnd::get(int m) const
 // -----------------------------------------------------
 
 
+void AcrdaWnd::updateAllResolvedFlags()
+{
+    std::vector<bool> newResolvedFlags(size());
+    for (int i=0; i<vect.size(); i++) {
+        PacketInfo p = vect[i];
+
+        // If already resolved, skip to the next packet.
+        if (p.isResolved())
+            continue;
+
+        simtime_t start = p.getStartTime();
+        simtime_t end   = p.getEndTime();
+
+        // Assume it to be resolvable
+        bool isThisResolvable = true;
+        for (int j=0; j<vect.size() && isThisResolvable; j++) {
+            if (j!=i) {
+                PacketInfo p2 = vect[j];
+                if (p2.isResolved())  // if the candidate conflicting pkt is resolved, it cannot collide
+                    continue;
+                simtime_t start2 = p2.getStartTime();
+                simtime_t end2   = p2.getEndTime();
+
+                // If p2 and p are not resolved and are colliding, then they cannot be resolved for now,
+                // so we skip to the next packet i (outer for loop).
+                if ((start <= start2 && start2 < end) || (start < end2 && end2 <= end))
+                    isThisResolvable = false;
+            }
+        }
+
+        // Remember that it is resolvable, but do not change its flag until the end of the algorithm
+        newResolvedFlags[i] = isThisResolvable;
+    }
+
+    for (int i=0; i<size(); i++) // TODO: check if we can set the flag directly on the PacketInfo object.
+        vect[i].setResolved(newResolvedFlags[i]);
+
+}
+
 int AcrdaWnd::firstResolvableIndex()
 {
     for (int i=0; i<vect.size(); i++) {
@@ -105,7 +144,7 @@ int AcrdaWnd::getNumResolved() //based on flags
 
 
 
-void AcrdaWnd::updateAllResolvedFlags()
+void AcrdaWnd::updateResolvedFlagsOfReplicas()
 {
     for (int i=0; i<vect.size(); i++) {
         PacketInfo p = vect[i];
@@ -143,7 +182,7 @@ void AcrdaWnd::shift(double newWndLeft)
     // Now i is the index of the first free slot, i.e. the actual size: we need to actually delete those objects.
     vect.resize(i);
 
-    updateAllResolvedFlags();
+    updateResolvedFlagsOfReplicas();
 }
 
 

@@ -78,11 +78,18 @@ public:
 
     // -----------------------------------------------------
 
+    /**
+     * Visits all packets in the current window and flags as resolvable all packets
+     * that are currently resolvable, i.e. that do not collide with other non-resolved
+     * packets.
+     */
+    void updateAllResolvedFlags();
+
     int firstResolvableIndex();
 
     PacketInfo firstResolvable();
 
-    void updateAllResolvedFlags();
+    void updateResolvedFlagsOfReplicas();
 
     int getNumResolved();
 
