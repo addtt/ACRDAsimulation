@@ -16,14 +16,20 @@ network Acrda
 {
     parameters:
         int numHosts;  // number of hosts
+        int nRep;
+        int nSlots;
+        double tFrame;
         //double txRate @unit(bps);  // transmission rate
         @display("bgi=background/terrain,s");
     submodules:
         server: Server {
-            numHosts = numHosts;
+                numHosts = numHosts;
         }
         host[numHosts]: Host {
-            //txRate = txRate;
+                //txRate = txRate;
+                nRep = nRep;
+                nSlots = nSlots;
+                tFrame = tFrame;
         }
 }
 

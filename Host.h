@@ -21,34 +21,34 @@ namespace acrda {
 class Host : public cSimpleModule
 {
   private:
-    // parameters
+
+    // Parameters
+
     simtime_t radioDelay;
     //double txRate;
     cPar *iaTime;
     cPar *pkLenBits;
+    int N_REP;
+    int N_SLOTS;
+    double T_FRAME;
+    double T_PKT_MAX;   // Slot duration
+    double PKDURATION;
 
-    static const int N_REP = 3;
-    static const int N_SLOTS = 10;
-    const double T_FRAME = 1;
-    const double T_PKT_MAX = T_FRAME / N_SLOTS;   // Slot duration
-
-    const double PKDURATION = T_PKT_MAX * 0.9;  // TODO: TEMPORARY!
-
+    // Constants
     static const int MSG_STARTFRAME = 1;
     static const int MSG_STARTTX    = 2;
     static const int MSG_ENDTX      = 3;
 
-    // state variables, event pointers etc
+    // State variables, event pointers etc
     cModule *server;
     cMessage *startFrameEvent;
-    cMessage *startTxEvent[N_REP];
-    cMessage *endTxEvent[N_REP];
+    cMessage **startTxEvent;
+    cMessage **endTxEvent;
     enum {IDLE=0, TRANSMIT=1} state;
     simsignal_t stateSignal;
     int pkCounter;
     int replicaCounter;
-
-    AcrdaPkt *framePkts[N_REP]; // Array of pointers to packet objects
+    AcrdaPkt **framePkts; // Array of pointers to packet objects
 
   public:
     Host();

@@ -20,8 +20,6 @@ Host::Host()
 {
     startFrameEvent = NULL;
     server = NULL;
-
-    //TODO: init other stuff to NULL...?
 }
 
 
@@ -36,6 +34,9 @@ Host::~Host()
         if (endTxEvent[i] != NULL)
             cancelAndDelete(endTxEvent[i]);
     }
+    delete [] framePkts;
+    delete [] startTxEvent;
+    delete [] endTxEvent;
 }
 
 
@@ -47,16 +48,21 @@ void Host::initialize()
     server = simulation.getModuleByPath("server");
     if (!server) error("server not found");
 
-    //txRate = par("txRate");
     radioDelay = par("radioDelay");
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
+    N_REP = par("nRep");
+    N_SLOTS = par("nSlots");
+    T_FRAME = par("tFrame");
+    T_PKT_MAX = T_FRAME / N_SLOTS;
+    PKDURATION = T_PKT_MAX * 0.9;  // TODO: TEMPORARY!
+    //txRate = par("txRate");
 
     replicaCounter = 0;
 
-    //framePkts = new AcrdaPkt* [N_REP];
-    //startTxEvent = new cMessage *[N_REP];
-    //endTxEvent   = new cMessage *[N_REP];
+    framePkts = new AcrdaPkt* [N_REP];
+    startTxEvent = new cMessage *[N_REP];
+    endTxEvent   = new cMessage *[N_REP];
 
     startFrameEvent = new cMessage("startFrameEvent", MSG_STARTFRAME); // always the same object
     for (int i=0; i<N_REP; i++) {
