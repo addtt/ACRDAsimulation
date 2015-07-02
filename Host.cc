@@ -152,12 +152,9 @@ void Host::handleMessage(cMessage *msg)
 
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
-        AcrdaPkt *outPkt = framePkts[replicaCounter]->dup();
+        AcrdaPkt *outPkt = framePkts[replicaCounter]->dup(); // TODO fix this
         sendDirect(outPkt, radioDelay, duration, server->gate("in"));
         delete framePkts[replicaCounter];
-        //sendDirect(framePkts[replicaCounter], radioDelay, duration, server->gate("in"));
-//        cPacket *tmpmsg = new cPacket("packet");
-//        sendDirect(tmpmsg, radioDelay, duration, server->gate("in"));
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
         replicaCounter++; // number of replicas sent in this frame so far

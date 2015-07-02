@@ -48,7 +48,7 @@ class Host : public cSimpleModule
     int pkCounter;
     int replicaCounter;
 
-    AcrdaPkt *framePkts[N_REP]; // Array of pointers to packet objects TODO: what should I do?
+    AcrdaPkt *framePkts[N_REP]; // Array of pointers to packet objects
 
   public:
     Host();
