@@ -174,16 +174,16 @@ void AcrdaWnd::shift(double newWndLeft)
 
 std::string AcrdaWnd::toString()
 {
-    std::ostringstream convert;
-    convert << "\n------\nCurrent window (" << size() << "elements):\n";
+    std::ostringstream strStream;
+    strStream << "\n------\nCurrent window (" << size() << "elements):\n";
     for (int i=0; i<size(); i++) {
         PacketInfo *p = & vect[i];
-        convert << "hostID=" << p->getHostIdx() << "\t";
-        convert << "pkID=" << p->getPkIdx() << "\t";
-        convert << p->getStartTime() << " to " << p->getEndTime();
-        convert << "  -  " << p->isResolved();
-        convert << endl;
+        strStream << "hostID=" << p->getHostIdx() << "\t";
+        strStream << "pkID=" << p->getPkIdx() << "\t";
+        strStream << p->getStartTime() << " to " << p->getEndTime();
+        strStream << "  -  " << p->isResolved();
+        strStream << endl;
     }
-    convert << "------\n";
-    return convert.str();
+    strStream << "------\n";
+    return strStream.str();
 }
