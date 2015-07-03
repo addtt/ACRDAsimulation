@@ -12,6 +12,8 @@
 
 #include <omnetpp.h>
 #include "acrdaPkt.h"
+//#include <iostream>
+#include <fstream>
 
 namespace acrda {
 
@@ -33,6 +35,12 @@ class Host : public cSimpleModule
     double T_FRAME;
     double T_PKT_MAX;   // Slot duration
     double PKDURATION;
+
+    bool haveDataFile;
+    std::string filename;
+    std::ifstream dataFile;
+
+    int thisHostsId;
 
     // Constants
     static const int MSG_STARTFRAME = 1;

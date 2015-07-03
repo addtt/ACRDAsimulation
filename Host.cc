@@ -42,13 +42,36 @@ Host::~Host()
 
 void Host::initialize()
 {
-    // TODO all constants must be defined here. Then they will take values from the .ini parameters.
+    thisHostsId = this->idx;
+
+    std::ostringstream strStream;
+    strStream << "inputfiles/host" << thisHostsId << ".txt"; // TODO: this should be a parameter (.ini file)
+    filename = strStream.str();
+    dataFile = std::ifstream(filename);
+
+    // How to use input files: http://www.cplusplus.com/doc/tutorial/files/
+    //while ( getline (dataFile,line) )
+    //    cout << line << '\n';
+    //dataFile.close();
+
+    if (dataFile.is_open()) {
+        haveDataFile = true;
+        std::string radioDelayStr;
+        getline(dataFile, radioDelayStr);
+        radioDelay = std::stod(radioDelayStr, nullptr);
+    }
+    else {
+        std::cout << "Unable to open file " << filename << endl;
+        std::cout.flush();
+        haveDataFile = false;
+    }
 
     stateSignal = registerSignal("state");
     server = simulation.getModuleByPath("server");
     if (!server) error("server not found");
 
-    radioDelay = par("radioDelay");
+    if (!haveDataFile)
+        radioDelay = par("radioDelay");
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
     N_REP = par("nRep");
@@ -81,6 +104,8 @@ void Host::initialize()
         getDisplayString().setTagArg("t",2,"#808000");
 
     scheduleAt(0, startFrameEvent);
+
+    std::cout << radioDelay << " s" << endl;
 }
 
 
@@ -119,7 +144,7 @@ void Host::handleMessage(cMessage *msg)
 
         // Generate packets and schedule start times
         char pkname[40];
-        sprintf(pkname,"pk-%d-#%d", this->idx, pkCounter);
+        sprintf(pkname,"pk-%d-#%d", thisHostsId, pkCounter);
         for (int i=0; i<N_REP; i++) {   // for each packet replica in this frame
             double replicaFrameOffset = replicaLocs[i] * T_PKT_MAX;
             scheduleAt(simTime() + replicaFrameOffset, startTxEvent[i]);
@@ -133,7 +158,7 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            framePkts[i] = new AcrdaPkt(this->idx, pkCounter, pkname, replicaRelativeOffsets);
+            framePkts[i] = new AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets);
             framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }
 
@@ -158,8 +183,7 @@ void Host::handleMessage(cMessage *msg)
 
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
-        AcrdaPkt *outPkt = framePkts[replicaCounter]->dup(); // TODO fix this
-        sendDirect(outPkt, radioDelay, duration, server->gate("in"));
+        sendDirect(framePkts[replicaCounter]->dup(), radioDelay, duration, server->gate("in"));
         delete framePkts[replicaCounter];
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
