@@ -42,9 +42,9 @@ class Server : public cSimpleModule
     // statistics
     simsignal_t receiveBeginSignal;
     simsignal_t receiveSignal;
-    std::vector< std::list<int> > decodedPackets;
+    std::vector< std::list<int> > successfulPackets;
     std::vector<int> numReceivedPackets;
-    std::vector<int> numDecodedPackets;
+    std::vector<int> numSuccessfulPackets;
 
   public:
     Server();

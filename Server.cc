@@ -42,8 +42,8 @@ void Server::initialize()
     wndCompleted = new cMessage("window-completed");
 
     numReceivedPackets.resize(numHosts);
-    numDecodedPackets.resize(numHosts);
-    decodedPackets.resize(numHosts);
+    numSuccessfulPackets.resize(numHosts);
+    successfulPackets.resize(numHosts);
 
     gate("in")->setDeliverOnReceptionStart(true);
     nowReceiving = false;
@@ -101,7 +101,7 @@ void Server::handleMessage(cMessage *msg)
         }
 
         std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
-        updateResolvedPktsLists(decodedPackets, resolvedPkts);
+        updateResolvedPktsLists(successfulPackets, resolvedPkts);
 
         // Shift the window
         double newWndLeft = simTime().dbl() + wndShift - wndSize;
@@ -215,13 +215,13 @@ void Server::finish()
 
     // Compute number of successful packets for each host.
     for (int i=0; i<numHosts; i++)
-        numDecodedPackets[i] = decodedPackets[i].size();
+        numSuccessfulPackets[i] = successfulPackets[i].size();
 
     // Display number of received packets (including replicas) and successful ones, for each host.
     std::cout << "\t\tRcvd (w/replicas)   Successful\n";
     for (int i=0; i<numHosts; i++) {
         std::cout << "From host " << i << ":\t\t";
-        std::cout << numReceivedPackets[i] << "\t\t" << numDecodedPackets[i];
+        std::cout << numReceivedPackets[i] << "\t\t" << numSuccessfulPackets[i];
         std::cout << endl;
     }
 }
