@@ -212,6 +212,18 @@ void Server::finish()
     EV << "duration: " << simTime() << endl;
 
     recordScalar("duration", simTime());
+
+    // Compute number of successful packets for each host.
+    for (int i=0; i<numHosts; i++)
+        numDecodedPackets[i] = decodedPackets[i].size();
+
+    // Display number of received packets (including replicas) and successful ones, for each host.
+    std::cout << "\t\tRcvd (w/replicas)   Successful\n";
+    for (int i=0; i<numHosts; i++) {
+        std::cout << "From host " << i << ":\t\t";
+        std::cout << numReceivedPackets[i] << "\t\t" << numDecodedPackets[i];
+        std::cout << endl;
+    }
 }
 
 
