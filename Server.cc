@@ -44,6 +44,7 @@ void Server::initialize()
 
     numReceivedPackets.resize(numHosts);
     numSuccessfulPackets.resize(numHosts);
+    numAttemptedPackets.resize(numHosts);
     successfulPackets.resize(numHosts);
 
     gate("in")->setDeliverOnReceptionStart(true);
@@ -210,7 +211,8 @@ int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPac
 
 void Server::finish()
 {
-    EV << "duration: " << simTime() << endl;
+    EV << "\n\n\n";
+    EV << "Simulation duration: " << simTime() << endl;
 
     recordScalar("duration", simTime());
 
@@ -218,12 +220,21 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         numSuccessfulPackets[i] = successfulPackets[i].size();
 
+    // Compute number of attempted packets for each host.
+    // It is the ceiling of the number of received packets divided by the number of replicas.
+    // In fact the server module receives all packets, even the colliding ones, and knows
+    // everything about them. Therefore the server module receives a number of packets equal
+    // to a multiple of the number of replicas N_REP, plus a number of replicas of the last
+    // packet that is strictly smaller than N_REP.
+    for (int i=0; i<numHosts; i++)
+        numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
+
     // Display number of received packets (including replicas) and successful ones, for each host.
-    std::cout << "\t\tRcvd (w/replicas)   Successful\n";
+    EV << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
     for (int i=0; i<numHosts; i++) {
-        std::cout << "From host " << i << ":\t\t";
-        std::cout << numReceivedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        std::cout << endl;
+        EV << "From host " << i << ":\t\t";
+        EV << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
+        EV << endl;
     }
 }
 

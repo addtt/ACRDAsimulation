@@ -46,6 +46,7 @@ class Server : public cSimpleModule
     std::vector< std::list<int> > successfulPackets;
     std::vector<int> numReceivedPackets;
     std::vector<int> numSuccessfulPackets;
+    std::vector<int> numAttemptedPackets;
 
   public:
     Server();
