@@ -127,7 +127,12 @@ public:
     /**
      * Returns the number of packets in the window that are flagged as resolved.
      */
-    int getNumResolved();
+    int getNumResolvedPkts();
+
+    /**
+     * Returns the packets in the window that are flagged as resolved.
+     */
+    std::vector<PacketInfo> getResolvedPkts();
 
     void shift(double newWndLeft);
 

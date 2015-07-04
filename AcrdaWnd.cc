@@ -118,13 +118,27 @@ PacketInfo AcrdaWnd::firstResolvable()
 }
 
 
-int AcrdaWnd::getNumResolved() //based on flags
+int AcrdaWnd::getNumResolvedPkts() //based on flags
 {
     int nres = 0;
     for (int i=0; i<vect.size(); i++)
         if (vect[i].isResolved())
             nres++;
     return nres;
+}
+
+
+std::vector<PacketInfo> AcrdaWnd::getResolvedPkts()
+{
+    std::vector<PacketInfo> resolvedPkts;
+    resolvedPkts.reserve(size());
+
+    for (int i=0; i<vect.size(); i++)
+        if (vect[i].isResolved())
+            resolvedPkts.push_back(vect[i]);
+
+    resolvedPkts.shrink_to_fit();
+    return resolvedPkts;
 }
 
 

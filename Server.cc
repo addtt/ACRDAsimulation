@@ -96,7 +96,7 @@ void Server::handleMessage(cMessage *msg)
                 }
             }
 
-            EV << "   resolved packets: " << rxWnd.getNumResolved() << endl;
+            EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
 
         // Shift the window
