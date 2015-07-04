@@ -82,6 +82,7 @@ void Host::initialize()
     //txRate = par("txRate");
 
     replicaCounter = 0;
+    pkCounter = 0;
 
     framePkts = new AcrdaPkt* [N_REP];
     startTxEvent = new cMessage *[N_REP];
@@ -96,7 +97,6 @@ void Host::initialize()
 
     state = IDLE;
     emit(stateSignal, state);
-    pkCounter = 0;
     WATCH((int&)state);
     WATCH(pkCounter);
 
@@ -104,8 +104,6 @@ void Host::initialize()
         getDisplayString().setTagArg("t",2,"#808000");
 
     scheduleAt(0, startFrameEvent);
-
-    std::cout << radioDelay << " s" << endl;
 }
 
 
@@ -162,8 +160,8 @@ void Host::handleMessage(cMessage *msg)
             framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }
 
-        pkCounter++;
-        replicaCounter = 0;
+        pkCounter++;        // Increment packet counter
+        replicaCounter = 0; // Initialize replica counter for the current packet
 
     } // start-frame event
 

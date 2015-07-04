@@ -43,7 +43,7 @@ class Server : public cSimpleModule
     simsignal_t receiveBeginSignal;
     simsignal_t receiveSignal;
     std::vector<long> decodedPackets;  // TODO: implement this part
-    std::vector<long> receivedPackets;
+    std::vector<int> numReceivedPackets;
 
   public:
     Server();

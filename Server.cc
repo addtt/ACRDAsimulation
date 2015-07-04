@@ -41,7 +41,7 @@ void Server::initialize()
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
 
-    receivedPackets.resize(numHosts);
+    numReceivedPackets.resize(numHosts);
     decodedPackets.resize(numHosts);
 
     gate("in")->setDeliverOnReceptionStart(true);
@@ -136,7 +136,7 @@ void Server::handleMessage(cMessage *msg)
         simtime_t recvStartTime = simTime();
         simtime_t recvEndTime = recvStartTime + pkt->getDuration(); // end-of-reception time (at the server)
 
-        receivedPackets[pkt->getHostIdx()]++;
+        numReceivedPackets[pkt->getHostIdx()]++;
 
         PacketInfo pkInfoObj = PacketInfo(pkt, simTime(), recvEndTime);
         rxWnd.add(pkInfoObj);
