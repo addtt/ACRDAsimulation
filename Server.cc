@@ -41,9 +41,12 @@ void Server::initialize()
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
 
+    receivedPackets.resize(numHosts);
+    decodedPackets.resize(numHosts);
+
     gate("in")->setDeliverOnReceptionStart(true);
     nowReceiving = false;
-    receiveCounter = 0;
+    numIncomingTransmissions = 0;
 
     receiveBeginSignal = registerSignal("receiveBegin");
     receiveSignal = registerSignal("receive");
@@ -106,17 +109,18 @@ void Server::handleMessage(cMessage *msg)
 
 
     // --- End of reception: just for statistics
+    // The channel seen by the server becomes idle.
 
     else if (msg==endRxEvent)
     {
         nowReceiving = false;
-        receiveCounter = 0;
-        emit(receiveBeginSignal, receiveCounter);
+        numIncomingTransmissions = 0;
+        emit(receiveBeginSignal, numIncomingTransmissions);
 
         // update network graphics
         if (ev.isGUI()) {
             getDisplayString().setTagArg("i2",0,"x_yellow");
-            getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(receiveCounter)).c_str() );
+            getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(numIncomingTransmissions)).c_str() );
             getDisplayString().setTagArg("t",2,"#808000");
         }
     }
@@ -127,9 +131,12 @@ void Server::handleMessage(cMessage *msg)
     else
     {
         AcrdaPkt *pkt = check_and_cast<AcrdaPkt *>(msg);
-        emit(receiveBeginSignal, ++receiveCounter);
+        emit(receiveBeginSignal, ++numIncomingTransmissions);
         ASSERT(pkt->isReceptionStart());  // this packet object represents the start of the reception (at the server)
-        simtime_t recvEndTime = simTime() + pkt->getDuration(); // end-of-reception time (at the server)
+        simtime_t recvStartTime = simTime();
+        simtime_t recvEndTime = recvStartTime + pkt->getDuration(); // end-of-reception time (at the server)
+
+        receivedPackets[pkt->getHostIdx()]++;
 
         PacketInfo pkInfoObj = PacketInfo(pkt, simTime(), recvEndTime);
         rxWnd.add(pkInfoObj);
@@ -149,7 +156,7 @@ void Server::handleMessage(cMessage *msg)
 
         if (ev.isGUI()) {
             getDisplayString().setTagArg("i2",0,"x_yellow");
-            getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(receiveCounter)).c_str() );
+            getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(numIncomingTransmissions)).c_str() );
             getDisplayString().setTagArg("t",2,"#808000");
         }
 

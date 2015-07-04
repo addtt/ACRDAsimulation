@@ -35,13 +35,15 @@ class Server : public cSimpleModule
     cMessage *wndCompleted;
     AcrdaWnd rxWnd;
 
-    long receiveCounter;
+    long numIncomingTransmissions;
     simtime_t recvStartTime;
     enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
 
     // statistics
     simsignal_t receiveBeginSignal;
     simsignal_t receiveSignal;
+    std::vector<long> decodedPackets;  // TODO: implement this part
+    std::vector<long> receivedPackets;
 
   public:
     Server();
