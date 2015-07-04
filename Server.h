@@ -53,6 +53,9 @@ class Server : public cSimpleModule
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
+
+  private:
+    int updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets, std::vector<PacketInfo> const &resolvedPkt);
 };
 
 }; //namespace

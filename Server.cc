@@ -166,6 +166,42 @@ void Server::handleMessage(cMessage *msg)
 }
 
 
+int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets, std::vector<PacketInfo> const &resolvedPkt)
+{
+    std::vector<PacketInfo>::const_iterator iter_wnd; // Iterator for the vector of resolved packets in this window.
+    std::list<int>::reverse_iterator iter_list;  // Iterator for the list of all resolved pkts of one host: from most recent to oldest.
+
+    int numNewResolvedPkts = 0;
+
+    for (iter_wnd = resolvedPkt.begin(); iter_wnd != resolvedPkt.end(); iter_wnd++) {
+        PacketInfo pkt = *iter_wnd;         // dereferencing: get one resolved packet
+        int hostIdx = pkt.getHostIdx(); // host index of this packet
+        int pkIdx = pkt.getPkIdx();     // packet index of this packet
+
+        // Check the list of resolved packets for the specific host, see if this packet
+        // was already resolved (either this packet or one of its replicas). Start from
+        // the end of the list, since the packet can only be toward the end of the list.
+        bool found = false;
+        iter_list = allDecodedPackets[hostIdx].rbegin();
+        while (true) { // TODO write this better
+            if (iter_list == allDecodedPackets[hostIdx].rend() || *iter_list < pkIdx) {
+                // It's not there: either we started to get old packets or we went through the whole list already.
+                // Insert it and break loop if we're sure we will not find it.
+                allDecodedPackets[hostIdx].insert(iter_list.base(), pkIdx); // Add it to the list of resolved packet (i.e. correctly received)
+                numNewResolvedPkts++;
+                break;
+            }
+            else if (*iter_list == pkIdx) {       // Break loop if we find it
+                found = true;
+                break;
+            }
+            iter_list++;
+        }
+    }
+    return numNewResolvedPkts;
+}
+
+
 
 void Server::finish()
 {
