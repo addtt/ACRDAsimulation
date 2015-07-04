@@ -28,6 +28,7 @@ class Server : public cSimpleModule
     double wndSize;    // Window size in seconds
     double wndShift;   // Window shift in seconds
     int numIterIC;       // Number of iterations for IC
+    int N_REP;
 
     // state variables, event pointers
     bool nowReceiving;

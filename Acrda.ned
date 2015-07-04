@@ -24,6 +24,7 @@ network Acrda
     submodules:
         server: Server {
                 numHosts = numHosts;
+                nRep = nRep;
         }
         host[numHosts]: Host {
                 //txRate = txRate;

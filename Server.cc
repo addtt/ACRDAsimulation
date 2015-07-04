@@ -34,6 +34,7 @@ Server::~Server()
 void Server::initialize()
 {
     numHosts = par("numHosts");
+    N_REP = par("nRep");
     wndSize = par("wndSize");
     wndShift = par("wndShift");
     numIterIC = par("numIterIC");
