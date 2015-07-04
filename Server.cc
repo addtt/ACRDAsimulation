@@ -42,6 +42,7 @@ void Server::initialize()
     wndCompleted = new cMessage("window-completed");
 
     numReceivedPackets.resize(numHosts);
+    numDecodedPackets.resize(numHosts);
     decodedPackets.resize(numHosts);
 
     gate("in")->setDeliverOnReceptionStart(true);
@@ -98,6 +99,9 @@ void Server::handleMessage(cMessage *msg)
 
             EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
+
+        std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
+        updateResolvedPktsLists(decodedPackets, resolvedPkts);
 
         // Shift the window
         double newWndLeft = simTime().dbl() + wndShift - wndSize;
