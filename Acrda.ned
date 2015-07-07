@@ -27,7 +27,6 @@ network Acrda
                 nRep = nRep;
         }
         host[numHosts]: Host {
-                //txRate = txRate;
                 nRep = nRep;
                 nSlots = nSlots;
                 tFrame = tFrame;

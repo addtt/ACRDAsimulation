@@ -21,8 +21,6 @@ simple Host
         int nRep;
         int nSlots;
         double tFrame;
-        volatile int pkLenBits @unit(b);  // packet length in bits
-        volatile double iaTime @unit(s);  // packet interarrival time
         @display("i=device/pc_s");
 }
 
