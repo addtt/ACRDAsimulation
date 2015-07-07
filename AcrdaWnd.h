@@ -133,6 +133,11 @@ public:
     std::vector<PacketInfo> getResolvedPkts();
 
     /**
+     * Returns true if all packets of the window are flagged as resolved.
+     */
+    bool areAllResolved();
+
+    /**
      * Shifts the window so that the left boundary is newWndLeft. Old packets are removed, the internal
      * vector is defragmented, and finally updates all resolved flags with updateResolvedFlagsOfReplicas().
      * Note that newWndLeft must be greater than or equal to the current left boundary of the window.

@@ -162,6 +162,11 @@ void AcrdaWnd::updateResolvedFlagsOfReplicas()
     }
 }
 
+bool AcrdaWnd::areAllResolved()
+{
+    return (getNumResolvedPkts() == size());
+}
+
 
 
 void AcrdaWnd::shift(double newWndLeft)
