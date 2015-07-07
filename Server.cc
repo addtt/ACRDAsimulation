@@ -83,11 +83,12 @@ void Server::handleMessage(cMessage *msg)
             try {
                 firstResPkt = rxWnd.firstResolvable();
             }
-            catch (const std::out_of_range& oor) { // TODO check this
+            catch (const std::out_of_range& oor) {
+                // TODO store number of IC iterations performed, and failure rate=when the IC iterations
+                // are stuck because we can't resolve more packets
+                EV << "No more resolvable packets\n";
                 break;
                 //std::cerr << "Out of Range error: " << oor.what() << '\n';
-                //std::cerr << simTime() << endl;
-                //exit(1);
             }
 
             // Flag all replicas of that packet (including itself) as resolved
