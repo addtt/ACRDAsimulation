@@ -20,8 +20,6 @@ private:
 
 
 public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
 
 
     /**
@@ -36,11 +34,11 @@ public:
     virtual ~AcrdaWnd();
 
 
-    /** @name Container functions. */
-    //@{
+    // ----------------------------------------
+
 
     /**
-     * Returns the size of the window.
+     * Returns the size of the window, i.e. the number of packets currently stored.
      */
     int size() const {return vect.size();}
 
@@ -134,10 +132,21 @@ public:
      */
     std::vector<PacketInfo> getResolvedPkts();
 
+    /**
+     * Shifts the window so that the left boundary is newWndLeft. Old packets are removed, the internal
+     * vector is defragmented, and finally updates all resolved flags with updateResolvedFlagsOfReplicas().
+     * Note that newWndLeft must be greater than or equal to the current left boundary of the window.
+     */
     void shift(double newWndLeft);
 
+    /**
+     * Returns the leftmost boundary of the window.
+     */
     simtime_t getWndLeft() { return wndLeft;}
 
+    /**
+     * Returns a string representation of the window.
+     */
     std::string toString();
 
 
