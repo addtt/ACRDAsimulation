@@ -39,15 +39,17 @@ void Server::initialize()
     wndShift = par("wndShift");
     numIterIC = par("numIterIC");
 
-    endRxEvent = new cMessage("end-reception");
-    wndCompleted = new cMessage("window-completed");
-
     numReceivedPackets.resize(numHosts);
     numSuccessfulPackets.resize(numHosts);
     numAttemptedPackets.resize(numHosts);
     successfulPackets.resize(numHosts);
+    icIterationsHist.resize(numIterIC);
+
+    endRxEvent = new cMessage("end-reception");
+    wndCompleted = new cMessage("window-completed");
 
     gate("in")->setDeliverOnReceptionStart(true);
+
     nowReceiving = false;
     numIncomingTransmissions = 0;
 
@@ -76,7 +78,7 @@ void Server::handleMessage(cMessage *msg)
 
         // Perform IC iterations
         EV << "Interference Cancellation\n";
-        for (int i=0; i < numIterIC; i++) {
+        for (int iter=0; iter < numIterIC; iter++) {
 
             // Get the first resolvable (and not yet resolved) packet.
             PacketInfo firstResPkt;
@@ -84,11 +86,14 @@ void Server::handleMessage(cMessage *msg)
                 firstResPkt = rxWnd.firstResolvable();
             }
             catch (const std::out_of_range& oor) {
-                // TODO store number of IC iterations performed, and failure rate=when the IC iterations
-                // are stuck because we can't resolve more packets
-                EV << "No more resolvable packets\n";
+                // If no other resolvable packets exist, break the loop. This could be because all
+                // pkts have been resolved, or because no more pkts can be resolved. The latter
+                // case is called loop phenomenon [ACRDA_paper].
+                icIterationsHist[iter]++;
+
+                // TODO failure rate = when the IC is stuck because we can't resolve more packets (not because all packets are resolved)
+
                 break;
-                //std::cerr << "Out of Range error: " << oor.what() << '\n';
             }
 
             // Flag all replicas of that packet (including itself) as resolved
@@ -100,6 +105,7 @@ void Server::handleMessage(cMessage *msg)
                 }
             }
 
+            EV << rxWnd.toString();
             EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
 
@@ -214,6 +220,7 @@ void Server::finish()
 {
     EV << "\n\n\n";
     EV << "Simulation duration: " << simTime() << endl;
+    std::cout << "\n\n";
 
     recordScalar("duration", simTime());
 
@@ -231,12 +238,16 @@ void Server::finish()
         numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
 
     // Display number of received packets (including replicas) and successful ones, for each host.
-    EV << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
+    std::cout << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
     for (int i=0; i<numHosts; i++) {
-        EV << "From host " << i << ":\t\t";
-        EV << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        EV << endl;
+        std::cout << "From host " << i << ":\t\t";
+        std::cout << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
+        std::cout << endl;
     }
+
+    std::cout << "\nIC iterations:\n";
+    for (int i=0; i<numIterIC; i++)
+        std::cout << i << " iterations: " << icIterationsHist[i] << endl;
 }
 
 
