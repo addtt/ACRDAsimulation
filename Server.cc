@@ -106,11 +106,11 @@ void Server::handleMessage(cMessage *msg)
 
             EV << rxWnd.toString();
             EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
-
-            // This is the case of loop phenomenon. Related to the IC failure rate.
-            if (! rxWnd.areAllResolved())
-                loopEvents++;
         }
+
+        // This is the case of loop phenomenon. Related to the IC failure rate.
+        if (! rxWnd.areAllResolved())
+            loopEvents++;
 
         std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
         updateResolvedPktsLists(successfulPackets, resolvedPkts);
