@@ -28,7 +28,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/acrdaPkt.o $O/AcrdaWnd.o $O/Host.o $O/PacketInfo.o $O/Server.o
+OBJS = $O/AcrdaPkt.o $O/AcrdaWnd.o $O/Host.o $O/PacketInfo.o $O/Server.o
 
 # Message files
 MSGFILES =
@@ -116,21 +116,16 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc inputfiles/*.cc results/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/AcrdaPkt.o: AcrdaPkt.cc
 $O/AcrdaWnd.o: AcrdaWnd.cc \
 	AcrdaWnd.h \
-	PacketInfo.h \
-	acrdaPkt.h
+	PacketInfo.h
 $O/Host.o: Host.cc \
-	Host.h \
-	acrdaPkt.h
+	Host.h
 $O/PacketInfo.o: PacketInfo.cc \
-	PacketInfo.h \
-	acrdaPkt.h
+	PacketInfo.h
 $O/Server.o: Server.cc \
 	AcrdaWnd.h \
 	PacketInfo.h \
-	Server.h \
-	acrdaPkt.h
-$O/acrdaPkt.o: acrdaPkt.cc \
-	acrdaPkt.h
+	Server.h
 
