@@ -49,11 +49,6 @@ void Host::initialize()
     filename = strStream.str();
     dataFile = std::ifstream(filename);
 
-    // How to use input files: http://www.cplusplus.com/doc/tutorial/files/
-    //while ( getline (dataFile,line) )
-    //    cout << line << '\n';
-    //dataFile.close();
-
     if (dataFile.is_open()) {
         haveDataFile = true;
         std::string line;
@@ -68,16 +63,15 @@ void Host::initialize()
     }
     else {
         std::cout << "Unable to open file " << filename << endl;
-        std::cout.flush();
         haveDataFile = false;
         haveExternalArrivalTimes = false;
     }
 
     // Display input file status
+    std::cout << "   hostId=" << thisHostsId;
+    std::cout << "   haveDataFile=" << haveDataFile;
+    std::cout << "   haveExternalInterarrivals=" << haveExternalArrivalTimes;
     std::cout << endl;
-    std::cout << "hostId=" << thisHostsId << endl;
-    std::cout << "haveDataFile=" << haveDataFile << endl;
-    std::cout << "haveExternalInterarrivals=" << haveExternalArrivalTimes << endl;
 
     stateSignal = registerSignal("state");
     server = simulation.getModuleByPath("server");
@@ -92,7 +86,6 @@ void Host::initialize()
     T_FRAME = par("tFrame");
     T_PKT_MAX = T_FRAME / N_SLOTS;
     PKDURATION = T_PKT_MAX * 0.9;  // TODO: TEMPORARY!
-    //txRate = par("txRate");
 
     replicaCounter = 0;
     pkCounter = 0;
@@ -225,11 +218,6 @@ void Host::handleMessage(cMessage *msg)
         }
     }
 
-}
-
-simtime_t Host::getNextTransmissionTime()
-{
-    return (simTime() + iaTime->doubleValue());
 }
 
 }; //namespace
