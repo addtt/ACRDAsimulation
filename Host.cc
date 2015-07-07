@@ -85,7 +85,7 @@ void Host::initialize()
     N_SLOTS = par("nSlots");
     T_FRAME = par("tFrame");
     T_PKT_MAX = T_FRAME / N_SLOTS;
-    PKDURATION = T_PKT_MAX * 0.9;  // TODO: TEMPORARY!
+    PKDURATION = T_PKT_MAX;
 
     replicaCounter = 0;
     pkCounter = 0;
