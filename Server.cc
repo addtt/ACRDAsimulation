@@ -44,6 +44,8 @@ void Server::initialize()
     numAttemptedPackets.resize(numHosts);
     successfulPackets.resize(numHosts);
     icIterationsHist.resize(numIterIC);
+    loopEvents = 0;
+    wndShiftEvents = 0;
 
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
@@ -90,9 +92,6 @@ void Server::handleMessage(cMessage *msg)
                 // pkts have been resolved, or because no more pkts can be resolved. The latter
                 // case is called loop phenomenon [ACRDA_paper].
                 icIterationsHist[iter]++;
-
-                // TODO failure rate = when the IC is stuck because we can't resolve more packets (not because all packets are resolved)
-
                 break;
             }
 
@@ -107,6 +106,10 @@ void Server::handleMessage(cMessage *msg)
 
             EV << rxWnd.toString();
             EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
+
+            // This is the case of loop phenomenon. Related to the IC failure rate.
+            if (! rxWnd.areAllResolved())
+                loopEvents++;
         }
 
         std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
@@ -115,6 +118,7 @@ void Server::handleMessage(cMessage *msg)
         // Shift the window
         double newWndLeft = simTime().dbl() + wndShift - wndSize;
         rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags)
+        wndShiftEvents++;
 
         // Schedule next window shift
         scheduleAt(simTime() + wndShift, wndCompleted);
@@ -248,6 +252,10 @@ void Server::finish()
     std::cout << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
         std::cout << i << " iterations: " << icIterationsHist[i] << endl;
+
+    std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents) << "% of wnd shifts)\n";
+
+    std::cout.flush();
 }
 
 

@@ -48,6 +48,8 @@ class Server : public cSimpleModule
     std::vector<int> numSuccessfulPackets;
     std::vector<int> numAttemptedPackets;
     std::vector<int> icIterationsHist;
+    int loopEvents;     // Number of loop phenomena
+    int wndShiftEvents; // Number of window shifts
 
   public:
     Server();
