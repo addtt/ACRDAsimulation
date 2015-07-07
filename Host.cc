@@ -56,15 +56,28 @@ void Host::initialize()
 
     if (dataFile.is_open()) {
         haveDataFile = true;
-        std::string radioDelayStr;
-        getline(dataFile, radioDelayStr);
-        radioDelay = std::stod(radioDelayStr, nullptr);
+        std::string line;
+        getline(dataFile, line);
+        radioDelay = std::stod(line, nullptr);
+        while (getline(dataFile, line))
+            arrivalTimes.push_back(std::stod(line, nullptr));
+        dataFile.close();
+        arrivalTimes.shrink_to_fit();
+        arrTimesIter = arrivalTimes.begin();
+        haveExternalArrivalTimes = (arrivalTimes.size() > 0);
     }
     else {
         std::cout << "Unable to open file " << filename << endl;
         std::cout.flush();
         haveDataFile = false;
+        haveExternalArrivalTimes = false;
     }
+
+    // Display input file status
+    std::cout << endl;
+    std::cout << "hostId=" << thisHostsId << endl;
+    std::cout << "haveDataFile=" << haveDataFile << endl;
+    std::cout << "haveExternalInterarrivals=" << haveExternalArrivalTimes << endl;
 
     stateSignal = registerSignal("state");
     server = simulation.getModuleByPath("server");
@@ -103,7 +116,12 @@ void Host::initialize()
     if (ev.isGUI())
         getDisplayString().setTagArg("t",2,"#808000");
 
-    scheduleAt(0, startFrameEvent);
+    simtime_t firstArrival = 0;
+    if (haveExternalArrivalTimes) {
+        firstArrival = *arrTimesIter;
+        arrTimesIter++;
+    }
+    scheduleAt(firstArrival, startFrameEvent);
 }
 
 
@@ -115,7 +133,12 @@ void Host::handleMessage(cMessage *msg)
     {
         ASSERT (state==IDLE);
 
-        scheduleAt(simTime() + T_FRAME, startFrameEvent);
+        simtime_t nextStartFrame = simTime() + T_FRAME;
+        if (haveExternalArrivalTimes) {
+            nextStartFrame = std::max(nextStartFrame.dbl(), *arrTimesIter);
+            arrTimesIter++;
+        }
+        scheduleAt(nextStartFrame, startFrameEvent);
 
         // Choose replica locations
         int replicaLocs[N_REP];

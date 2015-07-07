@@ -35,8 +35,11 @@ class Host : public cSimpleModule
     double T_FRAME;
     double T_PKT_MAX;   // Slot duration
     double PKDURATION;
+    std::vector<double> arrivalTimes;
+    std::vector<double>::iterator arrTimesIter;
 
     bool haveDataFile;
+    bool haveExternalArrivalTimes;
     std::string filename;
     std::ifstream dataFile;
 
