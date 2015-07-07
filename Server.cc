@@ -232,6 +232,8 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         numSuccessfulPackets[i] = successfulPackets[i].size();
 
+
+
     // Compute number of attempted packets for each host.
     // It is the ceiling of the number of received packets divided by the number of replicas.
     // In fact the server module receives all packets, even the colliding ones, and knows
@@ -241,6 +243,14 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
 
+    // Compute throughput of the system and of each host (pkts per second)
+    double sysThrput = 0;
+    std::vector<double> hostThrput(numHosts);
+    for (int i=0; i<numHosts; i++) {
+        hostThrput[i] = ((double) numSuccessfulPackets[i]) / simTime();
+        sysThrput += hostThrput[i];
+    }
+
     // Display number of received packets (including replicas) and successful ones, for each host.
     std::cout << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
     for (int i=0; i<numHosts; i++) {
@@ -248,6 +258,12 @@ void Server::finish()
         std::cout << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
         std::cout << endl;
     }
+
+    // Display throughput statistics
+    std::cout << "\n\nThroughput (packets per second)\n";
+    for (int i=0; i<numHosts; i++)
+        std::cout << "  host " << i << ": " << hostThrput[i] << endl;
+    std::cout << "  total : " << sysThrput << endl;
 
     std::cout << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
