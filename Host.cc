@@ -79,8 +79,7 @@ void Host::initialize()
 
     if (!haveDataFile)
         radioDelay = par("radioDelay");
-    iaTime = &par("iaTime");
-    pkLenBits = &par("pkLenBits");
+//    iaTime = &par("iaTime");
     N_REP = par("nRep");
     N_SLOTS = par("nSlots");
     T_FRAME = par("tFrame");
@@ -173,7 +172,6 @@ void Host::handleMessage(cMessage *msg)
 
             // Create the current packet
             framePkts[i] = new AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets);
-            framePkts[i]->setBitLength(pkLenBits->longValue()); // TODO: useless?
         }
 
         pkCounter++;        // Increment packet counter
