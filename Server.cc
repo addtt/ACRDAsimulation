@@ -104,11 +104,20 @@ void Server::handleMessage(cMessage *msg)
                 }
             }
 
-            EV << rxWnd.toString();
-            EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
+            //EV << rxWnd.toString();
+            //EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
 
+        // Now we update resolved flags according to replicas. If one packet is resolved, we flag all
+        // of its replicas in the window as resolved. We could not do this before, because we needed
+        // to distinguish between already resolved packets and those that are not yet resolved but
+        // can be because they don't overlap with non-resolved packets.
+        rxWnd.updateResolvedFlagsOfReplicas();
+
+        EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
+
         // This is the case of loop phenomenon. Related to the IC failure rate.
+        // TODO Check definition of loop phenomenon! How should it behave with packets whose replicas fall in the future?
         if (! rxWnd.areAllResolved())
             loopEvents++;
 
@@ -117,7 +126,7 @@ void Server::handleMessage(cMessage *msg)
 
         // Shift the window
         double newWndLeft = simTime().dbl() + wndShift - wndSize;
-        rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags)
+        rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags after shifting)
         wndShiftEvents++;
 
         // Schedule next window shift
@@ -271,6 +280,7 @@ void Server::finish()
 
     std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents) << "% of wnd shifts)\n";
 
+    std::cout << "\n\n";
     std::cout.flush();
 }
 
