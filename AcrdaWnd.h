@@ -93,31 +93,31 @@ public:
     std::vector<int> getNewResolvableIndices(bool firstOnly=false);
 
 
-    /**
-     * Visits all packets in the current window and flags as resolvable all packets
-     * that are currently resolvable, i.e. that do not collide with other non-resolved
-     * packets.
-     *
-     * It checks resolvable packets using the method getNewResolvableIndices(), and flags
-     * them as resolved.
-     */
-    void updateAllResolvedFlags();
+//    /**
+//     * Visits all packets in the current window and flags as resolvable all packets
+//     * that are currently resolvable, i.e. that do not collide with other non-resolved
+//     * packets.
+//     *
+//     * It checks resolvable packets using the method getNewResolvableIndices(), and flags
+//     * them as resolved.
+//     */
+//    void updateAllResolvedFlags();
 
 
-    /**
-     * Returns the index of the first resolvable (and not yet resolved) packet, i.e. the
-     * first packet that does not collide with non-resolved packets. It returns -1 if no
-     * such packet exists.
-     */
-    int firstResolvableIndex();
-
-
-    /**
-     * Returns the fist resolvable (and not yet resolved) packet, i.e. the first packet that
-     * does not collide with non-resolved packets. It throws an exception if no such packet
-     * exists.
-     */
-    PacketInfo firstResolvable();
+//    /**
+//     * Returns the index of the first resolvable (and not yet resolved) packet, i.e. the
+//     * first packet that does not collide with non-resolved packets. It returns -1 if no
+//     * such packet exists.
+//     */
+//    int firstResolvableIndex();
+//
+//
+//    /**
+//     * Returns the fist resolvable (and not yet resolved) packet, i.e. the first packet that
+//     * does not collide with non-resolved packets. It throws an exception if no such packet
+//     * exists.
+//     */
+//    PacketInfo firstResolvable();
 
 
     /**

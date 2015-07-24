@@ -107,25 +107,25 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
 }
 
 
-void AcrdaWnd::updateAllResolvedFlags()
-{
-    std::vector<int> newResIdx = getNewResolvableIndices();
-    for (int i=0; i<newResIdx.size(); i++)
-        vect[newResIdx[i]].setResolved();
-}
+//void AcrdaWnd::updateAllResolvedFlags()
+//{
+//    std::vector<int> newResIdx = getNewResolvableIndices();
+//    for (int i=0; i<newResIdx.size(); i++)
+//        vect[newResIdx[i]].setResolved();
+//}
 
 
-int AcrdaWnd::firstResolvableIndex()
-{
-    std::vector<int> newResIdx = getNewResolvableIndices(true);
-    bool isThereNewResIdx = (newResIdx.size() > 0);
-    return isThereNewResIdx ? newResIdx[0] : (-1);
-}
-
-PacketInfo AcrdaWnd::firstResolvable()
-{
-    return vect.at(firstResolvableIndex());
-}
+//int AcrdaWnd::firstResolvableIndex()
+//{
+//    std::vector<int> newResIdx = getNewResolvableIndices(true);
+//    bool isThereNewResIdx = (newResIdx.size() > 0);
+//    return isThereNewResIdx ? newResIdx[0] : (-1);
+//}
+//
+//PacketInfo AcrdaWnd::firstResolvable()
+//{
+//    return vect.at(firstResolvableIndex());
+//}
 
 
 int AcrdaWnd::getNumResolvedPkts() //based on flags
