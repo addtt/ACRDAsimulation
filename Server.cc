@@ -101,14 +101,17 @@ void Server::handleMessage(cMessage *msg)
                     }
                 }
             }
+
+            // If no new resolvable packets exist, break the loop. This could be because all
+            // pkts have been resolved, or because no more pkts can be resolved. The latter
+            // case is called loop phenomenon [ACRDA_paper] and [CRDSA_paper].
+            // TODO: consider correlation between loop phenomena in overlapping windows
             if (newResolvableIds.size() == 0) {
-                // If no other resolvable packets exist, break the loop. This could be because all
-                // pkts have been resolved, or because no more pkts can be resolved. The latter
-                // case is called loop phenomenon [ACRDA_paper].
                 icIterationsHist[iter]++;
                 break;
             }
 
+            //EV << "End of iteration " << (iter+1);
             //EV << rxWnd.toString();
             //EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
@@ -116,7 +119,6 @@ void Server::handleMessage(cMessage *msg)
         EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
 
         // This is the case of loop phenomenon. Related to the IC failure rate.
-        // TODO Check definition of loop phenomenon! How should it behave with packets whose replicas fall in the future?
         if (! rxWnd.areAllResolved())
             loopEvents++;
 
@@ -277,7 +279,7 @@ void Server::finish()
     for (int i=0; i<numIterIC; i++)
         std::cout << i << " iterations: " << icIterationsHist[i] << endl;
 
-    std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents) << "% of wnd shifts)\n";
+    std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
 
     std::cout << "\n\n";
     std::cout.flush();
