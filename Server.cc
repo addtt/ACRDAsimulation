@@ -78,10 +78,16 @@ void Server::handleMessage(cMessage *msg)
         // Display current window
         EV << rxWnd.toString();
 
+        // We may have received replicas of old packets. Use the old packets to flag the new
+        // replicas as resolved (the receiver will perform IC as in an usual iteration).
+        rxWnd.updateResolvedFlagsOfReplicas();
+
         // Perform IC iterations
-        EV << "Interference Cancellation\n";
+        EV << "\nInterference Cancellation\n";
         for (int iter=0; iter < numIterIC; iter++) {
 
+            // Get all packets that are directly resolvable, i.e. they do not collide with non-resolved
+            // packets. These packets are used to perform IC using replicas.
             std::vector<int> newResolvableIds = rxWnd.getNewResolvableIndices();
             for (int i=0; i < newResolvableIds.size(); i++) {
                 PacketInfo resolvablePkt = rxWnd.get(newResolvableIds.at(i));
@@ -107,12 +113,6 @@ void Server::handleMessage(cMessage *msg)
             //EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
 
-        // Now we update resolved flags according to replicas. If one packet is resolved, we flag all
-        // of its replicas in the window as resolved. We could not do this before, because we needed
-        // to distinguish between already resolved packets and those that are not yet resolved but
-        // can be because they don't overlap with non-resolved packets.
-        rxWnd.updateResolvedFlagsOfReplicas();
-
         EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
 
         // This is the case of loop phenomenon. Related to the IC failure rate.
@@ -123,9 +123,9 @@ void Server::handleMessage(cMessage *msg)
         std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
         updateResolvedPktsLists(successfulPackets, resolvedPkts);
 
-        // Shift the window
+        // Shift the window (discard oldest packets).
         double newWndLeft = simTime().dbl() + wndShift - wndSize;
-        rxWnd.shift(newWndLeft);  // Shift (and update 'resolved' flags after shifting)
+        rxWnd.shift(newWndLeft);
         wndShiftEvents++;
 
         // Schedule next window shift
