@@ -82,26 +82,25 @@ void Server::handleMessage(cMessage *msg)
         EV << "Interference Cancellation\n";
         for (int iter=0; iter < numIterIC; iter++) {
 
-            // Get the first resolvable (and not yet resolved) packet.
-            PacketInfo firstResPkt;
-            try {
-                firstResPkt = rxWnd.firstResolvable();
+            std::vector<int> newResolvableIds = rxWnd.getNewResolvableIndices();
+            for (int i=0; i < newResolvableIds.size(); i++) {
+                PacketInfo resolvablePkt = rxWnd.get(newResolvableIds.at(i));
+
+                // Flag all replicas of that packet (including itself) as resolved
+                for (int j=0; j < rxWnd.size(); j++) {
+                    PacketInfo p = rxWnd.get(j);
+                    if (p.isReplicaOf(& resolvablePkt)) {
+                        p.setResolved();
+                        rxWnd.addAt(j, p);
+                    }
+                }
             }
-            catch (const std::out_of_range& oor) {
+            if (newResolvableIds.size() == 0) {
                 // If no other resolvable packets exist, break the loop. This could be because all
                 // pkts have been resolved, or because no more pkts can be resolved. The latter
                 // case is called loop phenomenon [ACRDA_paper].
                 icIterationsHist[iter]++;
                 break;
-            }
-
-            // Flag all replicas of that packet (including itself) as resolved
-            for (int j=0; j<rxWnd.size(); j++) {
-                PacketInfo p = rxWnd.get(j);
-                if (p.isReplicaOf(& firstResPkt)) {
-                    p.setResolved();
-                    rxWnd.addAt(j, p);
-                }
             }
 
             //EV << rxWnd.toString();
