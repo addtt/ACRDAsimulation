@@ -37,6 +37,9 @@ public:
     // ----------------------------------------
 
 
+    bool operator==(const AcrdaWnd &other) const;
+    bool operator!=(const AcrdaWnd &other) const;
+
     /**
      * Returns the size of the window, i.e. the number of packets currently stored.
      */

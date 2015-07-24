@@ -51,6 +51,16 @@ const PacketInfo AcrdaWnd::get(int m) const
 // -----------------------------------------------------
 
 
+bool AcrdaWnd::operator==(const AcrdaWnd &other) const
+{
+    return (vect == other.vect) && (wndLeft == other.wndLeft);
+}
+
+bool AcrdaWnd::operator!=(const AcrdaWnd &other) const {
+    return !(*this == other);
+}
+
+
 
 
 std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
@@ -155,7 +165,7 @@ void AcrdaWnd::updateResolvedFlagsOfReplicas()
         // Loop through all other packets to flag all replicas as resolved
         for (int j=0; j<vect.size(); j++) {
             if (i!=j) {
-                if (vect[j].isReplicaOf(&p))
+                if (vect[j].isReplicaOf(&p) && vect[j].isResolved()==false)
                     vect[j].setResolved();
             }
         }
