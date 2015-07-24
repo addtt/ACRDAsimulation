@@ -27,6 +27,20 @@ PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> r
 PacketInfo::~PacketInfo() {
 }
 
+bool PacketInfo::operator==(const PacketInfo &other) const {
+    return (hostIdx == other.hostIdx) &&
+            (pkIdx == other.pkIdx) &&
+            (snr == other.snr) &&
+            (replicaOffsets == other.replicaOffsets) &&
+            (resolved == other.resolved) &&
+            (startTime == other.startTime) &&
+            (endTime == other.endTime);
+}
+
+bool PacketInfo::operator!=(const PacketInfo &other) const {
+    return !(*this == other);
+}
+
 simtime_t PacketInfo::getEndTime() const {
     return endTime;
 }
