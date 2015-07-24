@@ -142,7 +142,7 @@ public:
 
     /**
      * Shifts the window so that the left boundary is newWndLeft. Old packets are removed, the internal
-     * vector is defragmented, and finally updates all resolved flags with updateResolvedFlagsOfReplicas().
+     * vector is defragmented.
      * Note that newWndLeft must be greater than or equal to the current left boundary of the window.
      */
     void shift(double newWndLeft);

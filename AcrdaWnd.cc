@@ -195,8 +195,6 @@ void AcrdaWnd::shift(double newWndLeft)
 
     // Now i is the index of the first free slot, i.e. the actual size: we need to actually delete those objects.
     vect.resize(i);
-
-    updateResolvedFlagsOfReplicas();
 }
 
 
