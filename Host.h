@@ -30,9 +30,11 @@ class Host : public cSimpleModule
     double T_PKT_MAX;   // Slot duration
     double PKDURATION;  // Transmission time of a packet
 
-    bool haveDataFile;              // True if the data file for this host is available
-    bool haveExternalArrivalTimes;  // True if the arrival times are specified in the data file
-    std::string filename;
+    bool haveDataFile;
+    bool haveExternalArrivalTimes;  // True if the file with arrival times is available
+    std::string arrivalsFileName;
+    std::string dataFileName;
+    std::ifstream arrivalsFile;
     std::ifstream dataFile;
 
     int thisHostsId;    // ID of the current host: it is the index of the host array (from 0 to numHosts-1)

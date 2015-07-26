@@ -44,33 +44,47 @@ void Host::initialize()
 {
     thisHostsId = this->idx;
 
-    std::ostringstream strStream;
-    strStream << "inputfiles/host" << thisHostsId << ".txt"; // TODO: this should be a parameter (.ini file)
-    filename = strStream.str();
-    dataFile = std::ifstream(filename);
+    std::ostringstream dataStrStream;
+    dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";     // TODO: this should be a parameter (.ini file)
+    dataFileName = dataStrStream.str();
+    dataFile = std::ifstream(dataFileName);
 
     if (dataFile.is_open()) {
         haveDataFile = true;
         std::string line;
         getline(dataFile, line);
         radioDelay = std::stod(line, nullptr);
-        while (getline(dataFile, line))
-            arrivalTimes.push_back(std::stod(line, nullptr));
         dataFile.close();
+    }
+    else {
+        std::cout << "Unable to open file " << dataFileName << endl;
+        haveDataFile = false;
+    }
+
+
+    std::ostringstream arrStrStream;
+    arrStrStream << "inputfiles/host" << thisHostsId << "_arrivals.txt"; // TODO: this should be a parameter (.ini file)
+    arrivalsFileName = arrStrStream.str();
+    arrivalsFile = std::ifstream(arrivalsFileName);
+
+    if (arrivalsFile.is_open()) {
+        std::string line;
+        while (getline(arrivalsFile, line))
+            arrivalTimes.push_back(std::stod(line, nullptr));
+        arrivalsFile.close();
         arrivalTimes.shrink_to_fit();
         arrTimesIter = arrivalTimes.begin();
         haveExternalArrivalTimes = (arrivalTimes.size() > 0);
     }
     else {
-        std::cout << "Unable to open file " << filename << endl;
-        haveDataFile = false;
+        std::cout << "Unable to open file " << arrivalsFileName << endl;
         haveExternalArrivalTimes = false;
     }
 
     // Display input file status
     std::cout << "   hostId=" << thisHostsId;
     std::cout << "   haveDataFile=" << haveDataFile;
-    std::cout << "   haveExternalInterarrivals=" << haveExternalArrivalTimes;
+    std::cout << "   haveExternalArrivals=" << haveExternalArrivalTimes;
     std::cout << endl;
 
     stateSignal = registerSignal("state");
