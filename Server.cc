@@ -253,6 +253,15 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
 
+    // Compute success rate of the system and of each host
+    std::vector<double> successRates(numHosts);
+    double systemSuccessRate = 0;
+    for (int i=0; i<numHosts; i++) {
+        successRates[i] = (double)numSuccessfulPackets[i] / numAttemptedPackets[i];
+        systemSuccessRate += successRates[i] / numHosts;
+    }
+
+
     // Compute throughput of the system and of each host (pkts per second)
     double sysThrput = 0;
     std::vector<double> hostThrput(numHosts);
@@ -274,6 +283,13 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         std::cout << "  host " << i << ": " << hostThrput[i] << endl;
     std::cout << "  total : " << sysThrput << endl;
+
+    // Display success rate statistics
+    std::cout << "\n\nSuccess rate\n";
+    for (int i=0; i<numHosts; i++)
+        std::cout << "  host " << i << ": " << successRates[i] << endl;
+    std::cout << "  total : " << systemSuccessRate << endl;
+
 
     std::cout << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
