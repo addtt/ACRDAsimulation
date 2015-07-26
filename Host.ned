@@ -21,6 +21,8 @@ simple Host
         int nRep;
         int nSlots;
         double tFrame;
+        string arrivalType;
+        double iaTime @unit(s);  // packet mean interarrival time
         @display("i=device/pc_s");
 }
 

@@ -13,8 +13,11 @@
 #include <omnetpp.h>
 #include "acrdaPkt.h"
 #include <fstream>
+#include <random>
 
 namespace acrda {
+
+enum ArrivalType { EXTERNAL, HEAVY_TRAFFIC, POISSON };
 
 class Host : public cSimpleModule
 {
@@ -29,9 +32,14 @@ class Host : public cSimpleModule
     double T_FRAME;     // Frame duration
     double T_PKT_MAX;   // Slot duration
     double PKDURATION;  // Transmission time of a packet
+    ArrivalType arrivalType;
+
+    // Parameters and variables for the Poisson case
+    double meanInterarrival; // Mean interarrival time for the Poisson case
+    std::default_random_engine generator;
+    std::exponential_distribution<double> distribution;
 
     bool haveDataFile;
-    bool haveExternalArrivalTimes;  // True if the file with arrival times is available
     std::string arrivalsFileName;
     std::string dataFileName;
     std::ifstream arrivalsFile;

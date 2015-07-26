@@ -44,6 +44,16 @@ void Host::initialize()
 {
     thisHostsId = this->idx;
 
+    std::string arrivalTypeStr = par("arrivalType");
+    if (arrivalTypeStr == "EXTERNAL")
+        arrivalType = EXTERNAL;
+    else if (arrivalTypeStr == "HEAVY_TRAFFIC")
+        arrivalType = HEAVY_TRAFFIC;
+    else if (arrivalTypeStr == "POISSON")
+        arrivalType = POISSON;
+    else
+        throw cRuntimeError("Unknown 'arrival type' parameter");
+
     std::ostringstream dataStrStream;
     dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";     // TODO: this should be a parameter (.ini file)
     dataFileName = dataStrStream.str();
@@ -61,30 +71,40 @@ void Host::initialize()
         haveDataFile = false;
     }
 
+    if (arrivalType == EXTERNAL) {
+        bool haveExternalArrivalTimes;
 
-    std::ostringstream arrStrStream;
-    arrStrStream << "inputfiles/host" << thisHostsId << "_arrivals.txt"; // TODO: this should be a parameter (.ini file)
-    arrivalsFileName = arrStrStream.str();
-    arrivalsFile = std::ifstream(arrivalsFileName);
+        std::ostringstream arrStrStream;
+        arrStrStream << "inputfiles/host" << thisHostsId << "_arrivals.txt"; // TODO: this should be a parameter (.ini file)
+        arrivalsFileName = arrStrStream.str();
+        arrivalsFile = std::ifstream(arrivalsFileName);
 
-    if (arrivalsFile.is_open()) {
-        std::string line;
-        while (getline(arrivalsFile, line))
-            arrivalTimes.push_back(std::stod(line, nullptr));
-        arrivalsFile.close();
-        arrivalTimes.shrink_to_fit();
-        arrTimesIter = arrivalTimes.begin();
-        haveExternalArrivalTimes = (arrivalTimes.size() > 0);
+        if (arrivalsFile.is_open()) {
+            std::string line;
+            while (getline(arrivalsFile, line))
+                arrivalTimes.push_back(std::stod(line, nullptr));
+            arrivalsFile.close();
+            arrivalTimes.shrink_to_fit();
+            arrTimesIter = arrivalTimes.begin();
+            haveExternalArrivalTimes = (arrivalTimes.size() > 0);
+        }
+        else {
+            std::cout << "Unable to open file " << arrivalsFileName << endl;
+            haveExternalArrivalTimes = false;
+        }
+        if (!haveExternalArrivalTimes)
+            throw cRuntimeError("Could not retrieve arrival times from the arrivals file");
     }
-    else {
-        std::cout << "Unable to open file " << arrivalsFileName << endl;
-        haveExternalArrivalTimes = false;
+
+    else if (arrivalType == POISSON) {
+        meanInterarrival = par("iaTime");
+        distribution = std::exponential_distribution<double>(1/meanInterarrival);
     }
 
     // Display input file status
     std::cout << "   hostId=" << thisHostsId;
     std::cout << "   haveDataFile=" << haveDataFile;
-    std::cout << "   haveExternalArrivals=" << haveExternalArrivalTimes;
+    std::cout << "   arrivalType=" << arrivalType;
     std::cout << endl;
 
     stateSignal = registerSignal("state");
@@ -93,7 +113,6 @@ void Host::initialize()
 
     if (!haveDataFile)
         radioDelay = par("radioDelay");
-//    iaTime = &par("iaTime");
     N_REP = par("nRep");
     N_SLOTS = par("nSlots");
     T_FRAME = par("tFrame");
@@ -122,10 +141,16 @@ void Host::initialize()
     if (ev.isGUI())
         getDisplayString().setTagArg("t",2,"#808000");
 
-    simtime_t firstArrival = 0;
-    if (haveExternalArrivalTimes) {
+    simtime_t firstArrival;
+    if (arrivalType == HEAVY_TRAFFIC) {
+        firstArrival = 0;
+    }
+    else if (arrivalType == EXTERNAL) {
         firstArrival = *arrTimesIter;
         arrTimesIter++;
+    }
+    else if (arrivalType == POISSON) {
+        firstArrival = distribution(generator);
     }
     scheduleAt(firstArrival, startFrameEvent);
 }
@@ -140,9 +165,12 @@ void Host::handleMessage(cMessage *msg)
         ASSERT (state==IDLE);
 
         simtime_t nextStartFrame = simTime() + T_FRAME;
-        if (haveExternalArrivalTimes) {
+        if (arrivalType == EXTERNAL) {
             nextStartFrame = std::max(nextStartFrame.dbl(), *arrTimesIter);
             arrTimesIter++;
+        }
+        else if (arrivalType == POISSON) {
+            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + distribution(generator));
         }
         scheduleAt(nextStartFrame, startFrameEvent);
 
@@ -152,7 +180,6 @@ void Host::handleMessage(cMessage *msg)
         while (!decidedReplicas) {
             for (int i=0; i<N_REP; i++)
                 replicaLocs[i] = floor((double)rand() / ((unsigned long)RAND_MAX + 1) * N_SLOTS);
-
 
             bool allUnique = true;
             for (int i=0; i<N_REP && allUnique; i++)
@@ -165,9 +192,9 @@ void Host::handleMessage(cMessage *msg)
         }
 
         // Display replica locations
-        for (int i=0; i<N_REP; i++)
-            EV << replicaLocs[i] << " ";
-        EV << endl;
+        //for (int i=0; i<N_REP; i++)
+        //    EV << replicaLocs[i] << " ";
+        //EV << endl;
 
         // Generate packets and schedule start times
         char pkname[40];
@@ -206,7 +233,6 @@ void Host::handleMessage(cMessage *msg)
             getDisplayString().setTagArg("i",1,"yellow");
             getDisplayString().setTagArg("t",0,"TRANSMIT");
         }
-
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
         sendDirect(framePkts[replicaCounter]->dup(), radioDelay, duration, server->gate("in"));

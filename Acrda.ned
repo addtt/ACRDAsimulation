@@ -19,6 +19,7 @@ network Acrda
         int nRep;
         int nSlots;
         double tFrame;
+        string arrivalType;
         //double txRate @unit(bps);  // transmission rate
         @display("bgi=background/terrain,s");
     submodules:
@@ -30,6 +31,7 @@ network Acrda
                 nRep = nRep;
                 nSlots = nSlots;
                 tFrame = tFrame;
+                arrivalType = arrivalType;
         }
 }
 
