@@ -1,7 +1,7 @@
-#include "acrdaPkt.h"
+#include "AcrdaPkt.h"
 
-//Register_Class(acrdaPkt);
-
+AcrdaPkt::AcrdaPkt()
+{}
 
 AcrdaPkt::AcrdaPkt(int hostIdx, int pkIdx, const char *msg, std::vector<double> replicaOffsets, double snr) : cPacket(msg)
 {

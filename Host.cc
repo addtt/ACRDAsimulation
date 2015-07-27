@@ -9,7 +9,6 @@
 
 
 #include "Host.h"
-#include "acrdaPkt.h"
 
 namespace acrda {
 
@@ -34,7 +33,6 @@ Host::~Host()
         if (endTxEvent[i] != NULL)
             cancelAndDelete(endTxEvent[i]);
     }
-    delete [] framePkts;
     delete [] startTxEvent;
     delete [] endTxEvent;
 }
@@ -122,7 +120,7 @@ void Host::initialize()
     replicaCounter = 0;
     pkCounter = 0;
 
-    framePkts = new AcrdaPkt* [N_REP];
+    framePkts.resize(N_REP);
     startTxEvent = new cMessage *[N_REP];
     endTxEvent   = new cMessage *[N_REP];
 
@@ -212,7 +210,7 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            framePkts[i] = new AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets);
+            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets);
         }
 
         pkCounter++;        // Increment packet counter
@@ -235,8 +233,8 @@ void Host::handleMessage(cMessage *msg)
         }
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
-        sendDirect(framePkts[replicaCounter]->dup(), radioDelay, duration, server->gate("in"));
-        delete framePkts[replicaCounter];
+        sendDirect(framePkts[replicaCounter].dup(), radioDelay, duration, server->gate("in"));
+        //delete framePkts[replicaCounter];
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
         replicaCounter++; // number of replicas sent in this frame so far

@@ -11,7 +11,7 @@
 #define __ACRDA_HOST_H_
 
 #include <omnetpp.h>
-#include "acrdaPkt.h"
+#include "AcrdaPkt.h"
 #include <fstream>
 #include <random>
 
@@ -61,7 +61,7 @@ class Host : public cSimpleModule
     simsignal_t stateSignal;            // Not needed
     int pkCounter;      // Packet counter for this host: it goes from 0 up for each _new_ packet
     int replicaCounter; // For each frame, this counts the number of replicas sent up to now.
-    AcrdaPkt **framePkts; // Array of pointers to packet objects
+    std::vector<AcrdaPkt> framePkts; // Array of packet objects
     std::vector<double> arrivalTimes;           // Vector of arrival times, if given in the data file
     std::vector<double>::iterator arrTimesIter; // Iterator for the vector of arrival times
 

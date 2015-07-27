@@ -13,6 +13,7 @@ private:
 
 
 public:
+    AcrdaPkt();
     AcrdaPkt(int hostIdx, int pkIdx, const char *msg, std::vector<double> replicaOffsets, double snr=10);
     ~AcrdaPkt();
 
@@ -20,7 +21,7 @@ public:
     std::vector<double> getReplicaOffs() const;
     int getHostIdx() const { return hostIdx;}
     int getPkIdx() const { return pkIdx;}
-    virtual AcrdaPkt *dup() const { return new AcrdaPkt(*this);} // why const (overloads stuff...)? why virtual?
+    virtual AcrdaPkt *dup() const { return new AcrdaPkt(*this);}
 };
 
 #endif

@@ -116,11 +116,13 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc inputfiles/*.cc results/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/AcrdaPkt.o: AcrdaPkt.cc
+$O/AcrdaPkt.o: AcrdaPkt.cc \
+	AcrdaPkt.h
 $O/AcrdaWnd.o: AcrdaWnd.cc \
 	AcrdaWnd.h \
 	PacketInfo.h
 $O/Host.o: Host.cc \
+	AcrdaPkt.h \
 	Host.h
 $O/PacketInfo.o: PacketInfo.cc \
 	PacketInfo.h
