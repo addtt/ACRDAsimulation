@@ -77,6 +77,9 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
 
         simtime_t start = p.getStartTime();
         simtime_t end   = p.getEndTime();
+        double snr0 = p.getSnr();   // SNR of the current packet (linear)
+        double denom = 1;   // Denominator to evaluate SINR of the current packet: it depends
+                            // on the noise, and interference from other packets
 
         // Assume it to be resolvable
         bool isThisResolvable = true;
@@ -88,12 +91,30 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
                 simtime_t start2 = p2.getStartTime();
                 simtime_t end2   = p2.getEndTime();
 
-                // If p2 and p are not resolved and are colliding, then they cannot be resolved for now,
-                // so we skip to the next packet i (outer for loop).
-                if ((start <= start2 && start2 < end) || (start < end2 && end2 <= end))
-                    isThisResolvable = false;
+                // If p2 and p are not resolved and are colliding, we check the SINR.
+                // Then we skip to the next packet i (outer for loop).
+                bool expr1 = (start <= start2 && start2 < end);
+                bool expr2 = (start < end2 && end2 <= end);
+                bool expr3 = (start2 <= start && end <= end2);
+                if (expr1 || expr2 || expr3) {
+                    double overlapFactor;
+                    if (expr1)
+                        overlapFactor = (end - start2) / (end - start);
+                    else if (expr2)
+                        overlapFactor = (end2 - start) / (end - start);
+                    else //if (expr3)
+                        overlapFactor = 1;
+
+                    denom += overlapFactor + p2.getSnr();
+
+                    // TODO Stop immediately if we see that we have fallen below threshold: isThisResolvable serves this purpose
+                }
             }
         }
+
+        //std::cout << snr0 << " " << denom << " " << sinrThresh << endl;
+        if (snr0 / denom < sinrThresh) // Everything must be linear!
+            isThisResolvable = false;
 
         if (isThisResolvable) {
             newResolvableIndices.push_back(i);

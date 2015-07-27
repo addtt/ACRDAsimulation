@@ -32,6 +32,7 @@ simple Server
         double wndSize;
         double wndShift;
         int numIterIC;
+        double sinrThresh_dB;
     gates:
         input in @directIn;
 }

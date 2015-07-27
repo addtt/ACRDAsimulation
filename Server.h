@@ -29,6 +29,7 @@ class Server : public cSimpleModule
     double wndShift;   // Window shift in seconds
     int numIterIC;       // Number of iterations for IC
     int N_REP;
+    double sinrThresh;  // Linear threshold for SINR
 
     // state variables, event pointers
     bool nowReceiving;

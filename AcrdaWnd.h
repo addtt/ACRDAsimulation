@@ -17,6 +17,7 @@ class AcrdaWnd {
 private:
     std::vector<PacketInfo> vect;    // vector of objects
     simtime_t wndLeft; // Left boundary of the window
+    double sinrThresh;
 
 
 public:
@@ -78,6 +79,17 @@ public:
     const PacketInfo get(int m) const;
 
     // -----------------------------------------------------
+
+
+
+    double getSinrThresh() const {
+        return sinrThresh;
+    }
+
+    void setSinrThresh(double sinrThresh) {
+        this->sinrThresh = sinrThresh;
+    }
+
 
 
     /**
@@ -156,7 +168,6 @@ public:
      * Returns a string representation of the window.
      */
     std::string toString();
-
 
 };
 

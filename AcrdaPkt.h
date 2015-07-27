@@ -8,8 +8,8 @@ class AcrdaPkt : public cPacket
 private:
     int hostIdx;
     int pkIdx;
-    double snr;
-    std::vector<double> replicaOffsets;
+    double snr;     // Linear SNR
+    std::vector<double> replicaOffsets; // TODO Useless member
 
 
 public:

@@ -10,6 +10,7 @@
 
 #include "Server.h"
 #include <string>
+#include <math.h>
 
 namespace acrda {
 
@@ -38,6 +39,10 @@ void Server::initialize()
     wndSize = par("wndSize");
     wndShift = par("wndShift");
     numIterIC = par("numIterIC");
+    double sinrThresh_dB = par("sinrThresh_dB");
+    std::cout << "Server: SINR threshold is " << sinrThresh_dB << " dB" << endl;
+    sinrThresh = pow(10, sinrThresh_dB / 10);
+    rxWnd.setSinrThresh(sinrThresh);
 
     numReceivedPackets.resize(numHosts);
     numSuccessfulPackets.resize(numHosts);
