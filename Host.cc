@@ -190,11 +190,6 @@ void Host::handleMessage(cMessage *msg)
                 decidedReplicas = true;
         }
 
-        // Display replica locations
-        //for (int i=0; i<N_REP; i++)
-        //    EV << replicaLocs[i] << " ";
-        //EV << endl;
-
         // Generate packets and schedule start times
         char pkname[40];
         sprintf(pkname,"pk-%d-#%d", thisHostsId, pkCounter);
@@ -211,8 +206,7 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            double snr = (&par("randLognormUnity"))->doubleValue() * avgSnrLinear;
-            std::cout << snr << endl;
+            double snr = (&par("randLognormUnity"))->doubleValue() * avgSnrLinear; // TODO is this right?
             framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr);
         }
 
@@ -237,11 +231,9 @@ void Host::handleMessage(cMessage *msg)
 
         simtime_t duration = PKDURATION; // TODO handle duration as required!
         sendDirect(framePkts[replicaCounter].dup(), radioDelay, duration, server->gate("in"));
-        //delete framePkts[replicaCounter];
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
         replicaCounter++; // number of replicas sent in this frame so far
-
     }
 
     else if (msg->getKind() == MSG_ENDTX)  // TODO We don't need this, actually we don't need the state.
