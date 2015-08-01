@@ -52,6 +52,9 @@ void Host::initialize()
     else
         throw cRuntimeError("Unknown 'arrival type' parameter");
 
+    avgSnrLinear = par("defaultAvgSnrLinear");  // TODO: possibility to set default for each host in the data file
+    lognormalDist = std::lognormal_distribution<double>(0.0, 1.0);
+
     std::ostringstream dataStrStream;
     dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";     // TODO: this should be a parameter (.ini file)
     dataFileName = dataStrStream.str();
@@ -96,7 +99,7 @@ void Host::initialize()
 
     else if (arrivalType == POISSON) {
         meanInterarrival = par("iaTime");
-        distribution = std::exponential_distribution<double>(1/meanInterarrival);
+        expDist = std::exponential_distribution<double>(1/meanInterarrival);
     }
 
     // Display input file status
@@ -148,7 +151,7 @@ void Host::initialize()
         arrTimesIter++;
     }
     else if (arrivalType == POISSON) {
-        firstArrival = distribution(generator);
+        firstArrival = expDist(generator);
     }
     scheduleAt(firstArrival, startFrameEvent);
 }
@@ -168,7 +171,7 @@ void Host::handleMessage(cMessage *msg)
             arrTimesIter++;
         }
         else if (arrivalType == POISSON) {
-            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + distribution(generator));
+            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + expDist(generator));
         }
         scheduleAt(nextStartFrame, startFrameEvent);
 
@@ -210,7 +213,9 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets);
+            double snr = lognormalDist(generator) * avgSnrLinear;
+            std::cout << snr << endl;
+            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr);
         }
 
         pkCounter++;        // Increment packet counter

@@ -14,7 +14,7 @@ private:
 
 public:
     AcrdaPkt();
-    AcrdaPkt(int hostIdx, int pkIdx, const char *msg, std::vector<double> replicaOffsets, double snr=10);
+    AcrdaPkt(int hostIdx, int pkIdx, const char *msg, std::vector<double> replicaOffsets, double snr);
     ~AcrdaPkt();
 
     double getSnr() const { return snr;}

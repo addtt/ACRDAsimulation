@@ -25,6 +25,9 @@ class Host : public cSimpleModule
 
     // Parameters
 
+    // Random number generator
+    std::default_random_engine generator; // TODO use one per distribution?
+
     simtime_t radioDelay;   // Propagation delay from this host to the server
     //cPar *iaTime;
     int N_REP;          // Number of replicas in a frame, for each packet (including itself)
@@ -34,10 +37,12 @@ class Host : public cSimpleModule
     double PKDURATION;  // Transmission time of a packet
     ArrivalType arrivalType;
 
+    double avgSnrLinear;    // Average SNR for this host, linear
+    std::lognormal_distribution<double> lognormalDist;  // Get log-normal distributed values for the SNR
+
     // Parameters and variables for the Poisson case
     double meanInterarrival; // Mean interarrival time for the Poisson case
-    std::default_random_engine generator;
-    std::exponential_distribution<double> distribution;
+    std::exponential_distribution<double> expDist;
 
     bool haveDataFile;
     std::string arrivalsFileName;
