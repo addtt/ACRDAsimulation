@@ -29,7 +29,6 @@ class Host : public cSimpleModule
     std::default_random_engine generator; // TODO use one per distribution?
 
     simtime_t radioDelay;   // Propagation delay from this host to the server
-    //cPar *iaTime;
     int N_REP;          // Number of replicas in a frame, for each packet (including itself)
     int N_SLOTS;        // Number of slots in a frame
     double T_FRAME;     // Frame duration
@@ -42,7 +41,6 @@ class Host : public cSimpleModule
 
     // Parameters and variables for the Poisson case
     double meanInterarrival; // Mean interarrival time for the Poisson case
-    std::exponential_distribution<double> expDist;
 
     bool haveDataFile;
     std::string arrivalsFileName;

@@ -98,8 +98,7 @@ void Host::initialize()
     }
 
     else if (arrivalType == POISSON) {
-        meanInterarrival = par("iaTime");
-        expDist = std::exponential_distribution<double>(1/meanInterarrival);
+        meanInterarrival = par("meanInterarr");
     }
 
     // Display input file status
@@ -151,7 +150,7 @@ void Host::initialize()
         arrTimesIter++;
     }
     else if (arrivalType == POISSON) {
-        firstArrival = expDist(generator);
+        firstArrival = (&par("randExpUnity"))->doubleValue() * meanInterarrival;
     }
     scheduleAt(firstArrival, startFrameEvent);
 }
@@ -171,7 +170,7 @@ void Host::handleMessage(cMessage *msg)
             arrTimesIter++;
         }
         else if (arrivalType == POISSON) {
-            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + expDist(generator));
+            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + (&par("randExpUnity"))->doubleValue() * meanInterarrival);
         }
         scheduleAt(nextStartFrame, startFrameEvent);
 

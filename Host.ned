@@ -23,7 +23,8 @@ simple Host
         double tFrame;
         double defaultAvgSnrLinear;
         string arrivalType;
-        double iaTime @unit(s);  // packet mean interarrival time
+        double meanInterarr @unit(s);  // packet mean interarrival time
+        volatile double randExpUnity @unit(s);
         @display("i=device/pc_s");
 }
 
