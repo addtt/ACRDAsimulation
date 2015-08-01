@@ -53,7 +53,6 @@ void Host::initialize()
         throw cRuntimeError("Unknown 'arrival type' parameter");
 
     avgSnrLinear = par("defaultAvgSnrLinear");  // TODO: possibility to set default for each host in the data file
-    lognormalDist = std::lognormal_distribution<double>(0.0, 1.0);
 
     std::ostringstream dataStrStream;
     dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";     // TODO: this should be a parameter (.ini file)
@@ -212,7 +211,7 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            double snr = lognormalDist(generator) * avgSnrLinear;
+            double snr = (&par("randLognormUnity"))->doubleValue() * avgSnrLinear;
             std::cout << snr << endl;
             framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr);
         }
