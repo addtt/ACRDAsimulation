@@ -64,6 +64,8 @@ class Host : public cSimpleModule
     std::vector<double> arrivalTimes;           // Vector of arrival times, if given in the data file
     std::vector<double>::iterator arrTimesIter; // Iterator for the vector of arrival times
 
+    double avgSnr = 0;
+
   public:
     Host();
     virtual ~Host();
@@ -71,6 +73,7 @@ class Host : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    virtual void finish();
 };
 
 }; //namespace
