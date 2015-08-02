@@ -17,7 +17,7 @@ class AcrdaWnd {
 private:
     std::vector<PacketInfo> vect;    // vector of objects
     simtime_t wndLeft; // Left boundary of the window
-    double sinrThresh;
+    double sinrThresh;   // SINR threshold in linear
 
 
 public:
@@ -81,13 +81,18 @@ public:
     // -----------------------------------------------------
 
 
-
+    /**
+     * Returns the threshold for the SINR, in linear.
+     */
     double getSinrThresh() const {
         return sinrThresh;
     }
 
+    /**
+     * Sets the linear threshold for the SINR.
+     */
     void setSinrThresh(double sinrThresh) {
-        this->sinrThresh = sinrThresh;
+        this->sinrThresh = sinrThresh;    // SINR threshold in linear
     }
 
 

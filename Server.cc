@@ -41,7 +41,7 @@ void Server::initialize()
     numIterIC = par("numIterIC");
     double sinrThresh_dB = par("sinrThresh_dB");
     std::cout << "Server: SINR threshold is " << sinrThresh_dB << " dB" << endl;
-    sinrThresh = pow(10, sinrThresh_dB / 10);
+    sinrThresh = pow(10, sinrThresh_dB / 10);   // SINR threshold in linear
     rxWnd.setSinrThresh(sinrThresh);
 
     numReceivedPackets.resize(numHosts);
