@@ -25,7 +25,7 @@ simple Host
         string arrivalType;
         double meanInterarr @unit(s);  // packet mean interarrival time
         volatile double randExpUnity @unit(s);
-        volatile double randLognormUnity;
+        volatile double randSnrDistrib;
         @display("i=device/pc_s");
 }
 

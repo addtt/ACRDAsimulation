@@ -206,7 +206,7 @@ void Host::handleMessage(cMessage *msg)
             }
 
             // Create the current packet
-            double snr = (&par("randLognormUnity"))->doubleValue() * avgSnrLinear; // TODO is this right?
+            double snr = (&par("randSnrDistrib"))->doubleValue() * avgSnrLinear;
             avgSnr += snr;
             framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr);
         }
