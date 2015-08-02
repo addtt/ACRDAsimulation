@@ -254,7 +254,7 @@ void Host::handleMessage(cMessage *msg)
 
 void Host::finish()
 {
-    std::cout << "Host " << thisHostsId << ":  E[SNR] = " << (avgSnr/pkCounter) << endl;
+    std::cout << "Host " << thisHostsId << ":  E[SNR] = " << (avgSnr/pkCounter/N_REP) << endl;
 }
 
 }; //namespace
