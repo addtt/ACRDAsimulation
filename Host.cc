@@ -53,9 +53,10 @@ void Host::initialize()
         throw cRuntimeError("Unknown 'arrival type' parameter");
 
     avgSnrLinear = par("defaultAvgSnrLinear");  // TODO: possibility to set default for each host in the data file
+    spreadingFactor = par("defaultSpreadingFactor");  // TODO: possibility to set default for each host in the data file
 
     std::ostringstream dataStrStream;
-    dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";     // TODO: this should be a parameter (.ini file)
+    dataStrStream << "inputfiles/host" << thisHostsId << "_data.txt";   // TODO: this should be a parameter (.ini file)
     dataFileName = dataStrStream.str();
     dataFile = std::ifstream(dataFileName);
 
@@ -208,7 +209,7 @@ void Host::handleMessage(cMessage *msg)
             // Create the current packet
             double snr = (&par("randSnrDistrib"))->doubleValue() * avgSnrLinear;
             avgSnr += snr;
-            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr);
+            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkname, replicaRelativeOffsets, snr, spreadingFactor);
         }
 
         pkCounter++;        // Increment packet counter

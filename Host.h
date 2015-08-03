@@ -65,6 +65,7 @@ class Host : public cSimpleModule
     std::vector<double>::iterator arrTimesIter; // Iterator for the vector of arrival times
 
     double avgSnr = 0;
+    int spreadingFactor;
 
   public:
     Host();

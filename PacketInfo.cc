@@ -13,13 +13,14 @@ PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime)
     hostIdx = pkt->getHostIdx();
     pkIdx = pkt->getPkIdx();
     snr = pkt->getSnr();
+    sf = pkt->getSpreadingFactor();
     replicaOffsets = pkt->getReplicaOffs();
     resolved = false;
 }
 
-PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, std::vector<double> replicaOffsets,
+PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, int sf, std::vector<double> replicaOffsets,
         bool resolved, simtime_t startTime, simtime_t endTime)
-    : hostIdx{hostIdx}, pkIdx{pkIdx}, snr{snr}, replicaOffsets{replicaOffsets},
+    : hostIdx{hostIdx}, pkIdx{pkIdx}, snr{snr}, sf{sf}, replicaOffsets{replicaOffsets},
       resolved{resolved}, startTime{startTime}, endTime{endTime}
 {}
 
@@ -41,29 +42,11 @@ bool PacketInfo::operator!=(const PacketInfo &other) const {
     return !(*this == other);
 }
 
-simtime_t PacketInfo::getEndTime() const {
-    return endTime;
-}
-
-int PacketInfo::getHostIdx() const {
-    return hostIdx;
-}
-
-int PacketInfo::getPkIdx() const {
-    return pkIdx;
-}
 
 void PacketInfo::setResolved(bool resolved) {
     this->resolved = resolved;
 }
 
-double PacketInfo::getSnr() const {
-    return snr;
-}
-
-simtime_t PacketInfo::getStartTime() const {
-    return startTime;
-}
 
 bool PacketInfo::isReplicaOf(PacketInfo *other)
 {
