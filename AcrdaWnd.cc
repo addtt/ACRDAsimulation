@@ -63,7 +63,7 @@ bool AcrdaWnd::operator!=(const AcrdaWnd &other) const {
 
 
 
-std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
+std::vector<int> AcrdaWnd::getNewResolvableIndices()
 {
     std::vector<int> newResolvableIndices;
     newResolvableIndices.reserve(size());
@@ -116,11 +116,8 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
         if (snr0 / denom < sinrThresh) // Everything must be linear!
             isThisResolvable = false;
 
-        if (isThisResolvable) {
+        if (isThisResolvable)
             newResolvableIndices.push_back(i);
-            if (firstOnly)
-                break;
-        }
     }
 
     newResolvableIndices.shrink_to_fit();
@@ -135,18 +132,6 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices(bool firstOnly)
 //        vect[newResIdx[i]].setResolved();
 //}
 
-
-//int AcrdaWnd::firstResolvableIndex()
-//{
-//    std::vector<int> newResIdx = getNewResolvableIndices(true);
-//    bool isThereNewResIdx = (newResIdx.size() > 0);
-//    return isThereNewResIdx ? newResIdx[0] : (-1);
-//}
-//
-//PacketInfo AcrdaWnd::firstResolvable()
-//{
-//    return vect.at(firstResolvableIndex());
-//}
 
 
 int AcrdaWnd::getNumResolvedPkts() //based on flags
