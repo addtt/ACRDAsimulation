@@ -12,7 +12,6 @@
 #define __ACRDA_SERVER_H_
 
 #include <omnetpp.h>
-#include <acrdaPkt.h>
 #include <PacketInfo.h>
 #include <AcrdaWnd.h>
 

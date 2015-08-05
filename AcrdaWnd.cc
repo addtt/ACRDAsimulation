@@ -6,13 +6,8 @@
  */
 
 #include <AcrdaWnd.h>
-
-#include <string.h>
-#include <algorithm>
 #include <sstream>
-#include "globals.h"
-#include "cexception.h"
-#include <sstream>
+#include <vector>
 
 
 AcrdaWnd::~AcrdaWnd()
