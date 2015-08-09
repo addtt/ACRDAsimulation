@@ -126,7 +126,9 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices()
         }
 
         //std::cout << snr0 << " " << denom << " " << sinrThresh << endl;
-        if (snr0 / denom < sinrThresh) // Everything must be linear!
+        double sinr = snr0 / denom * p.getSpreadingFactor();
+        // This formula above only holds if SF is the same for the whole system.
+        if (sinr < sinrThresh) // Everything must be linear!
             isThisResolvable = false;
 
         if (isThisResolvable)
