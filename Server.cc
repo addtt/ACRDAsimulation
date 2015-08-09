@@ -34,8 +34,9 @@ void Server::initialize()
 {
     numHosts = par("numHosts");
     N_REP = par("nRep");
-    wndLength = par("wndLength").doubleValue() * 1;  // TODO spreading factor
-    wndShift = par("wndShift");
+    maxSf = par("maxSpreadingFactor");
+    wndLength = par("wndLength").doubleValue() * maxSf;
+    wndShift = par("wndShift").doubleValue() * maxSf;
     numIterIC = par("numIterIC");
     double sinrThresh_dB = par("sinrThresh_dB");
     std::cout << "Server: SINR threshold is " << sinrThresh_dB << " dB" << endl;

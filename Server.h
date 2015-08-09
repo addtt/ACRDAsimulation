@@ -29,6 +29,7 @@ class Server : public cSimpleModule
     int numIterIC;       // Number of iterations for IC
     int N_REP;
     double sinrThresh;  // Linear threshold for SINR
+    int maxSf;  // Max SF for all the system. The receive wnd size is proportional to maxSf.
 
     // state variables, event pointers
     bool nowReceiving;
