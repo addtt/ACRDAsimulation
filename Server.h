@@ -24,21 +24,21 @@ class Server : public cSimpleModule
 {
   private:
     int numHosts;       // Number of hosts
-    double wndLength;    // Window size in seconds
-    double wndShift;   // Window shift in seconds
-    int numIterIC;       // Number of iterations for IC
-    int N_REP;
+    double wndLength;   // Window size in seconds
+    double wndShift;    // Window shift in seconds
+    int numIterIC;      // Number of iterations for IC
+    int N_REP;          // Total number of replicas in one frame
     double sinrThresh;  // Linear threshold for SINR
     int maxSf;  // Max SF for all the system. The receive wnd size is proportional to maxSf.
 
     // state variables, event pointers
-    bool nowReceiving;
+    bool nowReceiving;              // True if and only if the server is receiving
+    long numIncomingTransmissions;  // Number of incoming transmission at this moment
+    simtime_t recvStartTime; // Start of continuous reception from one or more hosts, if nowReceiving is true.
+    AcrdaWnd rxWnd;    // Receive window
     cMessage *endRxEvent;
     cMessage *wndCompleted;
-    AcrdaWnd rxWnd;
 
-    long numIncomingTransmissions;
-    simtime_t recvStartTime;
     enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
 
     // statistics

@@ -231,7 +231,7 @@ void Host::handleMessage(cMessage *msg)
             getDisplayString().setTagArg("t",0,"TRANSMIT");
         }
 
-        simtime_t duration = PKDURATION; // TODO handle duration as required!
+        simtime_t duration = PKDURATION;
         sendDirect(framePkts[replicaCounter].dup(), radioDelay, duration, server->gate("in"));
         scheduleAt(simTime()+duration, endTxEvent[replicaCounter]);
 
@@ -255,7 +255,7 @@ void Host::handleMessage(cMessage *msg)
 
 void Host::finish()
 {
-    std::cout << "Host " << thisHostsId << ":  E[SNR] = " << (avgSnr/pkCounter/N_REP) << endl;
+    //std::cout << "Host " << thisHostsId << ":  E[SNR] = " << (avgSnr/pkCounter/N_REP) << endl;
 }
 
 }; //namespace

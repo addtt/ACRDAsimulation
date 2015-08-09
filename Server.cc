@@ -86,6 +86,8 @@ void Server::handleMessage(cMessage *msg)
 
         // We may have received replicas of old packets. Use the old packets to flag the new
         // replicas as resolved (the receiver will perform IC as in an usual iteration).
+        // For this to work _always_, we need that for each host the frame length is smaller
+        // than window size - window shift + 2*(transmission time for a packet).
         rxWnd.updateResolvedFlagsOfReplicas();
 
         // Perform IC iterations
