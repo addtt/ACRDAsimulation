@@ -63,6 +63,9 @@ bool AcrdaWnd::operator!=(const AcrdaWnd &other) const {
 
 
 
+void AcrdaWnd::setPacketResolvedFlag(int k) {
+    vect.at(k).setResolved();
+}
 
 std::vector<int> AcrdaWnd::getNewResolvableIndices()
 {

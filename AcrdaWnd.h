@@ -116,6 +116,12 @@ public:
     }
 
 
+    /**
+     * Sets the packet at index k in the window as resolved, calling the method
+     * setResolved() in PacketInfo.
+     */
+    void setPacketResolvedFlag(int k);
+
 
     /**
      * Checks which packets in the window are not resolved but can be immediately resolved

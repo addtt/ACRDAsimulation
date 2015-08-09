@@ -100,10 +100,8 @@ void Server::handleMessage(cMessage *msg)
                 // Flag all replicas of that packet (including itself) as resolved
                 for (int j=0; j < rxWnd.size(); j++) {
                     PacketInfo p = rxWnd.get(j);
-                    if (p.isReplicaOf(& resolvablePkt)) {
-                        p.setResolved();
-                        rxWnd.addAt(j, p);
-                    }
+                    if (p.isReplicaOf(& resolvablePkt))
+                        rxWnd.setPacketResolvedFlag(j);
                 }
             }
 
