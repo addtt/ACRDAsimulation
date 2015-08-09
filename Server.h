@@ -24,7 +24,7 @@ class Server : public cSimpleModule
 {
   private:
     int numHosts;       // Number of hosts
-    double wndSize;    // Window size in seconds
+    double wndLength;    // Window size in seconds
     double wndShift;   // Window shift in seconds
     int numIterIC;       // Number of iterations for IC
     int N_REP;

@@ -15,18 +15,27 @@ class AcrdaWnd {
 
 
 private:
-    std::vector<PacketInfo> vect;    // vector of objects
-    simtime_t wndLeft; // Left boundary of the window
-    double sinrThresh;   // SINR threshold in linear
+    std::vector<PacketInfo> vect;    // vector of PacketInfo objects
+    simtime_t wndLeft;  // Left boundary of the window
+    simtime_t wndLength; // Length (width) of the window
+    double sinrThresh;  // SINR threshold in linear
 
 
 public:
 
 
     /**
-     * Constructor.
+     * Default constructor. The object AcrdaWnd is not initialized and
+     * cannot be used properly since wndLength is 0.
      */
     explicit AcrdaWnd() {}
+
+    /**
+     * Explicit constructor for AcrdaWnd, with initialization of wndLength.
+     */
+    explicit AcrdaWnd(double wndLength) : wndLength (wndLength)
+    {
+    }
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -47,6 +56,11 @@ public:
     int size() const {return vect.size();}
 
     /**
+     * Returns the length of the window (in time).
+     */
+    simtime_t length() const {return wndLength;}
+
+    /**
      * Makes the container empty.
      */
     void clear();
@@ -54,6 +68,9 @@ public:
 
     /**
      * Appends the object into the window.
+     *
+     * It does nothing if the packet's start time is smaller then the left
+     * boundary (beginning) of the window.
      */
     void add(PacketInfo obj);
 
@@ -61,6 +78,9 @@ public:
      * Inserts the object into the window at the given position. If
      * the position is occupied, the function overwrites the object.
      * If the index is not valid, an out of bounds exception is thrown.
+     *
+     * It does nothing if the packet's start time is smaller then the left
+     * boundary (beginning) of the window.
      */
     void addAt(int m, PacketInfo obj);
 
@@ -139,9 +159,10 @@ public:
     bool areAllResolved();
 
     /**
-     * Shifts the window so that the left boundary is newWndLeft. Old packets are removed, the internal
-     * vector is defragmented.
-     * Note that newWndLeft must be greater than or equal to the current left boundary of the window.
+     * Shifts the window so that the left boundary is newWndLeft. Old packets are removed, and the
+     * internal vector is defragmented. Note that this method keeps all packets whose start time
+     * is outside the window and whose end time is inside the window.
+     * The parameter newWndLeft must be greater than or equal to the current left boundary of the window.
      */
     void shift(double newWndLeft);
 

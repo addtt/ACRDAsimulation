@@ -34,12 +34,14 @@ void Server::initialize()
 {
     numHosts = par("numHosts");
     N_REP = par("nRep");
-    wndSize = par("wndSize");
+    wndLength = par("wndLength").doubleValue() * 1;  // TODO spreading factor
     wndShift = par("wndShift");
     numIterIC = par("numIterIC");
     double sinrThresh_dB = par("sinrThresh_dB");
     std::cout << "Server: SINR threshold is " << sinrThresh_dB << " dB" << endl;
     sinrThresh = pow(10, sinrThresh_dB / 10);   // SINR threshold in linear
+
+    rxWnd = AcrdaWnd(wndLength);
     rxWnd.setSinrThresh(sinrThresh);
 
     numReceivedPackets.resize(numHosts);
@@ -64,7 +66,7 @@ void Server::initialize()
     emit(receiveSignal, 0L);
     emit(receiveBeginSignal, 0L);
 
-    scheduleAt(wndSize, wndCompleted);
+    scheduleAt(wndLength, wndCompleted);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -129,7 +131,7 @@ void Server::handleMessage(cMessage *msg)
         updateResolvedPktsLists(successfulPackets, resolvedPkts);
 
         // Shift the window (discard oldest packets).
-        double newWndLeft = simTime().dbl() + wndShift - wndSize;
+        double newWndLeft = simTime().dbl() + wndShift - wndLength;
         rxWnd.shift(newWndLeft);
         wndShiftEvents++;
 

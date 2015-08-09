@@ -24,12 +24,18 @@ void AcrdaWnd::clear()
 
 void AcrdaWnd::add(PacketInfo obj)
 {
-    vect.push_back(obj);
+    if (obj.getStartTime() < wndLeft)
+        std::cerr << "Warning! Trying to add old packet in the receive window" << endl;
+    else
+        vect.push_back(obj);
 }
 
 void AcrdaWnd::addAt(int m, PacketInfo obj)
 {
-    vect.at(m) = obj;
+    if (obj.getStartTime() < wndLeft)
+        std::cerr << "Warning! Trying to add old packet in the receive window" << endl;
+    else
+        vect.at(m) = obj;   // Throws an exception if out of bounds
 }
 
 PacketInfo AcrdaWnd::get(int m)
@@ -68,6 +74,15 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices()
 
         // If already resolved, skip to the next packet.
         if (p.isResolved())
+            continue;
+
+        // A packet cannot be added to the window before WndLeft, since it cannot arrive before WndLeft.
+        // This is also checked in the "add" methods, to be sure. Still, after a window shift it may
+        // happen that a packet starts before WndLeft and ends inside the current window, so it must be
+        // considered for collisions (if it was not resolved).
+        // There can also be a packet whose reception ends past the end of the window.
+        // These packets must be considered for collisions, but they can't be resolved, so we skip them.
+        if ((p.getEndTime() > wndLeft + wndLength) || (p.getStartTime() < wndLeft))
             continue;
 
         simtime_t start = p.getStartTime();

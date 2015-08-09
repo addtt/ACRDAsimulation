@@ -29,7 +29,7 @@ simple Server
         
         int numHosts;
         int nRep;
-        double wndSize;
+        double wndLength;
         double wndShift;
         int numIterIC;
         double sinrThresh_dB;
