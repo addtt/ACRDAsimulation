@@ -238,12 +238,13 @@ int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPac
 
 void Server::finish()
 {
-    EV << "\n\n\n";
-    EV << "Simulation duration: " << simTime() << endl;
-    std::cout << "\n\n";
-
     recordScalar("duration", simTime());
 
+    EV << "\n\n\n";
+    EV << "Simulation duration: " << simTime() << endl;
+
+    std::cout << "\n\n";
+    std::ostringstream strStream;
 
     // Compute number of attempted packets for each host.
     // It is the ceiling of the number of received packets divided by the number of replicas.
@@ -268,18 +269,18 @@ void Server::finish()
 
 
     // Display number of received packets (including replicas) and successful ones, for each host.
-    std::cout << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
+    strStream << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
     for (int i=0; i<numHosts; i++) {
-        std::cout << "From host " << i << ":\t\t";
-        std::cout << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        std::cout << endl;
+        strStream << "From host " << i << ":\t\t";
+        strStream << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
+        strStream << endl;
     }
 
     // Display success rate statistics
-    std::cout << "\n\nSuccess rate\n";
+    strStream << "\n\nSuccess rate\n";
     for (int i=0; i<numHosts; i++)
-        std::cout << "  host " << i << ": " << successRates[i] << endl;
-    std::cout << "  total : " << systemSuccessRate << endl;
+        strStream << "  host " << i << ": " << successRates[i] << endl;
+    strStream << "  total : " << systemSuccessRate << endl;
 
 
     // Compute throughput of the system and of each host (pkts per second)
@@ -291,24 +292,32 @@ void Server::finish()
     }
 
     // Display throughput statistics
-    std::cout << "\n\nThroughput (packets per second)\n";
+    strStream << "\n\nThroughput (packets per second)\n";
     for (int i=0; i<numHosts; i++)
-        std::cout << "  host " << i << ": " << hostThrput[i] << endl;
-    std::cout << "  total : " << sysThrput << endl;
+        strStream << "  host " << i << ": " << hostThrput[i] << endl;
+    strStream << "  total : " << sysThrput << endl;
 
 
 
     // Display IC iterations statistics
-    std::cout << "\nIC iterations:\n";
+    strStream << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
-        std::cout << i << " iterations: " << icIterationsHist[i] << endl;
+        strStream << i << " iterations: " << icIterationsHist[i] << endl;
 
     // Display empirical loop probability
-    std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
+    strStream << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
 
+
+
+    // Print to cout
+    std::cout << strStream.str();
     std::cout << "\n\n";
     std::cout.flush();
+
+    // Print to log file
+    // TODO
 }
+
 
 
 
