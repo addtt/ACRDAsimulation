@@ -24,7 +24,7 @@ Host::Host()
 
 Host::~Host()
 {
-    std::cout << "Destructor called - host\n";
+    std::cout << "Destructor called - host" << thisHostsId << endl;
     std::cout.flush();
     cancelAndDelete(startFrameEvent);
     for (int i=0; i<N_REP; i++) {

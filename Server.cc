@@ -244,11 +244,6 @@ void Server::finish()
 
     recordScalar("duration", simTime());
 
-    // Compute number of successful packets for each host.
-    for (int i=0; i<numHosts; i++)
-        numSuccessfulPackets[i] = successfulPackets[i].size();
-
-
 
     // Compute number of attempted packets for each host.
     // It is the ceiling of the number of received packets divided by the number of replicas.
@@ -259,6 +254,10 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
 
+    // Compute number of successful packets for each host.
+    for (int i=0; i<numHosts; i++)
+        numSuccessfulPackets[i] = successfulPackets[i].size();
+
     // Compute success rate of the system and of each host
     std::vector<double> successRates(numHosts);
     double systemSuccessRate = 0;
@@ -266,6 +265,21 @@ void Server::finish()
         successRates[i] = (double)numSuccessfulPackets[i] / numAttemptedPackets[i];
         systemSuccessRate += successRates[i] / numHosts;
     }
+
+
+    // Display number of received packets (including replicas) and successful ones, for each host.
+    std::cout << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
+    for (int i=0; i<numHosts; i++) {
+        std::cout << "From host " << i << ":\t\t";
+        std::cout << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
+        std::cout << endl;
+    }
+
+    // Display success rate statistics
+    std::cout << "\n\nSuccess rate\n";
+    for (int i=0; i<numHosts; i++)
+        std::cout << "  host " << i << ": " << successRates[i] << endl;
+    std::cout << "  total : " << systemSuccessRate << endl;
 
 
     // Compute throughput of the system and of each host (pkts per second)
@@ -276,31 +290,20 @@ void Server::finish()
         sysThrput += hostThrput[i];
     }
 
-    // Display number of received packets (including replicas) and successful ones, for each host.
-    std::cout << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
-    for (int i=0; i<numHosts; i++) {
-        std::cout << "From host " << i << ":\t\t";
-        std::cout << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        std::cout << endl;
-    }
-
     // Display throughput statistics
     std::cout << "\n\nThroughput (packets per second)\n";
     for (int i=0; i<numHosts; i++)
         std::cout << "  host " << i << ": " << hostThrput[i] << endl;
     std::cout << "  total : " << sysThrput << endl;
 
-    // Display success rate statistics
-    std::cout << "\n\nSuccess rate\n";
-    for (int i=0; i<numHosts; i++)
-        std::cout << "  host " << i << ": " << successRates[i] << endl;
-    std::cout << "  total : " << systemSuccessRate << endl;
 
 
+    // Display IC iterations statistics
     std::cout << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
         std::cout << i << " iterations: " << icIterationsHist[i] << endl;
 
+    // Display empirical loop probability
     std::cout << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
 
     std::cout << "\n\n";
