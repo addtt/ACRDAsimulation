@@ -14,6 +14,8 @@
 #include <omnetpp.h>
 #include <PacketInfo.h>
 #include <AcrdaWnd.h>
+#include <fstream>
+#include <time.h>
 
 namespace acrda {
 

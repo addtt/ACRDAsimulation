@@ -243,7 +243,6 @@ void Server::finish()
     EV << "\n\n\n";
     EV << "Simulation duration: " << simTime() << endl;
 
-    std::cout << "\n\n";
     std::ostringstream strStream;
 
     // Compute number of attempted packets for each host.
@@ -307,15 +306,38 @@ void Server::finish()
     // Display empirical loop probability
     strStream << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
 
+    strStream << "\n\n";
+    std::string logString = strStream.str();
 
+
+    // --- PRINT
 
     // Print to cout
-    std::cout << strStream.str();
     std::cout << "\n\n";
+    std::cout << logString;
     std::cout.flush();
 
-    // Print to log file
-    // TODO
+    // Retrieve time and define name of logfile
+    time_t rawtime;
+    struct tm * timeinfo;
+    char timecstring [30];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(timecstring,30,"%Y%m%d-%H%M%S",timeinfo);
+    std::string timeStr = timecstring;
+    std::string logFileName = "outputfiles/acrda-" + timeStr + ".log";
+
+    // Open and print to log file
+    std::ofstream logFile (logFileName, std::ios::out | std::ios::app);
+    if (logFile.is_open()) {
+        logFile << logString;
+        logFile.close();
+        std::cout << "Successfully written log to file\n";
+    }
+    else
+        std::cerr << "Unable to open log file in write mode\n";
+
 }
 
 
