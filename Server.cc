@@ -52,6 +52,7 @@ void Server::initialize()
     icIterationsHist.resize(numIterIC);
     loopEvents = 0;
     wndShiftEvents = 0;
+    avgGlobalDelays.resize(numHosts);
 
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
@@ -125,11 +126,13 @@ void Server::handleMessage(cMessage *msg)
         EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
 
         // This is the case of loop phenomenon. Related to the IC failure rate.
-        if (! rxWnd.areAllResolved())
+        if (! rxWnd.areAllResolved()) {
             loopEvents++;
+            ev << "Loop event\n";
+        }
 
         std::vector<PacketInfo> resolvedPkts = rxWnd.getResolvedPkts();
-        updateResolvedPktsLists(successfulPackets, resolvedPkts);
+        updateResolvedPktsLists(successfulPackets, avgGlobalDelays, resolvedPkts);
 
         // Shift the window (discard oldest packets).
         double newWndLeft = simTime().dbl() + wndShift - wndLength;
@@ -199,7 +202,8 @@ void Server::handleMessage(cMessage *msg)
 }
 
 
-int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets, std::vector<PacketInfo> const &resolvedPkt)
+int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets,
+        std::vector<double> &avgGlobalDelays, std::vector<PacketInfo> const &resolvedPkt)
 {
     std::vector<PacketInfo>::const_iterator iter_wnd; // Iterator for the vector of resolved packets in this window.
     std::list<int>::reverse_iterator iter_list;  // Iterator for the list of all resolved pkts of one host: from most recent to oldest.
@@ -220,7 +224,12 @@ int Server::updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPac
             if (iter_list == allDecodedPackets[hostIdx].rend() || *iter_list < pkIdx) {
                 // It's not there: either we started to get old packets or we went through the whole list already.
                 // Insert it and break loop if we're sure we will not find it.
-                allDecodedPackets[hostIdx].insert(iter_list.base(), pkIdx); // Add it to the list of resolved packet (i.e. correctly received)
+
+                // First we add it to the list of resolved packets (i.e. correctly received)
+                allDecodedPackets[hostIdx].insert(iter_list.base(), pkIdx);
+                // and then we add the packet's global delay to the cumulative sum of delays for that host.
+                avgGlobalDelays[hostIdx] += (simTime() - pkt.getGenerationTime()).dbl();
+
                 numNewResolvedPkts++;
                 break;
             }
@@ -295,6 +304,16 @@ void Server::finish()
     for (int i=0; i<numHosts; i++)
         strStream << "  host " << i << ": " << hostThrput[i] << endl;
     strStream << "  total : " << sysThrput << endl;
+
+
+    // Compute average global delays by dividing the cumulative sum by the number of resolved packets for each host
+    for (int i=0; i < numHosts; i++)
+        avgGlobalDelays[i] /= numSuccessfulPackets[i];
+
+    // Display delay statistics
+    strStream << "\n\nGlobal delay (average)\n";
+    for (int i=0; i<numHosts; i++)
+        strStream << "  host " << i << ": " << avgGlobalDelays[i] << endl;
 
 
 

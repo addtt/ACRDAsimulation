@@ -53,6 +53,7 @@ class Server : public cSimpleModule
     std::vector<int> icIterationsHist;
     int loopEvents;     // Number of loop phenomena
     int wndShiftEvents; // Number of window shifts
+    std::vector<double> avgGlobalDelays;    // It contains the cumulative sum of delays until the avg is computed in the end.
 
   public:
     Server();
@@ -64,7 +65,8 @@ class Server : public cSimpleModule
     virtual void finish();
 
   private:
-    int updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets, std::vector<PacketInfo> const &resolvedPkt);
+    int updateResolvedPktsLists(std::vector< std::list<int> > &allDecodedPackets,
+            std::vector<double> &avgGlobalDelays, std::vector<PacketInfo> const &resolvedPkt);
 };
 
 }; //namespace
