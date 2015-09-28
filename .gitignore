@@ -2,3 +2,5 @@
 results/*
 
 out/*
+
+*.log
