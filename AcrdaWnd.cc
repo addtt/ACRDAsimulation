@@ -223,7 +223,7 @@ void AcrdaWnd::shift(double newWndLeft)
 std::string AcrdaWnd::toString()
 {
     std::ostringstream strStream;
-    strStream << "\n------\nCurrent window (" << size() << "elements):\n";
+    strStream << "\n------\nCurrent window (" << size() << "elements, " << wndLeft << "s-" << (wndLeft+wndLength) << "s):\n";
     for (int i=0; i<size(); i++) {
         PacketInfo *p = & vect[i];
         strStream << "hostID=" << p->getHostIdx() << "\t";
