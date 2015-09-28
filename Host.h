@@ -63,6 +63,7 @@ class Host : public cSimpleModule
     std::vector<AcrdaPkt> framePkts; // Array of packet objects
     std::vector<double> arrivalTimes;           // Vector of arrival times, if given in the data file
     std::vector<double>::iterator arrTimesIter; // Iterator for the vector of arrival times
+    int backlogEvents;  // Number of backlog events
 
     double avgSnr = 0;
     int spreadingFactor;

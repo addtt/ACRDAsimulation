@@ -121,6 +121,7 @@ void Host::initialize()
 
     replicaCounter = 0;
     pkCounter = 0;
+    backlogEvents = 0;
 
     framePkts.resize(N_REP);
     startTxEvent = new cMessage *[N_REP];
@@ -170,6 +171,8 @@ void Host::handleMessage(cMessage *msg)
         if (arrivalType == EXTERNAL) {
             double nextArrival = *arrTimesIter; // It can actually be in the past if we're backlogged
             nextStartFrame = std::max(nextStartFrame.dbl(), nextArrival);
+            if (nextArrival < simTime().dbl())
+                backlogEvents++;
             arrTimesIter++;
         }
         else if (arrivalType == POISSON) {
@@ -180,6 +183,9 @@ void Host::handleMessage(cMessage *msg)
             arrivalTimes.push_back(nextArrival);
             nextStartFrame = std::max(nextStartFrame.dbl(), nextArrival);
 
+            if (nextArrival < simTime().dbl())
+                backlogEvents++;
+            //    std::cout << simTime().dbl() << ":   \t" << lastArrival << " \t" << nextInterarr << " \t" << nextArrival << "  (" << nextStartFrame << ")" << endl;
         }
         else if (arrivalType == HEAVY_TRAFFIC) {
             arrivalTimes.push_back(nextStartFrame.dbl());
