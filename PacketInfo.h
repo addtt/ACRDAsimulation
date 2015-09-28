@@ -21,15 +21,16 @@ private:
     int sf;     // Spreading Factor
     std::vector<double> replicaOffsets;
     bool resolved;
-    simtime_t startTime;
-    simtime_t endTime;
+    simtime_t generationTime; // arrival time at the sender's buffer
+    simtime_t startTime; // start of reception
+    simtime_t endTime;   // end of reception
 
 
 public:
     PacketInfo() {};
     PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime);
-    PacketInfo(int hostIdx, int pkIdx, double snr, int sf,
-            std::vector<double> replicaOffsets, bool resolved, simtime_t startTime, simtime_t endTime);
+    PacketInfo(int hostIdx, int pkIdx, double snr, int sf, std::vector<double> replicaOffsets,
+            bool resolved, simtime_t arrivalTime, simtime_t startTime, simtime_t endTime);
     virtual ~PacketInfo();
     bool operator==(const PacketInfo &other) const;
     bool operator!=(const PacketInfo &other) const;
@@ -38,6 +39,7 @@ public:
     int getPkIdx() const            { return pkIdx; }
     int getSpreadingFactor() const  { return sf;}
     double getSnr() const           { return snr; }
+    simtime_t getGenerationTime() const {return generationTime; }
     simtime_t getStartTime() const  { return startTime; }
     simtime_t getEndTime() const    { return endTime; }
     bool isResolved() const         { return resolved;}
