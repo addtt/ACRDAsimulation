@@ -227,8 +227,8 @@ void Host::handleMessage(cMessage *msg)
             // Create the current packet
             double snr = (&par("randSnrDistrib"))->doubleValue() * avgSnrLinear;
             avgSnr += snr;
-            double pkArrivalTime = arrivalTimes[arrivalTimes.size()-1];
-            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkArrivalTime, pkname, replicaRelativeOffsets, snr, spreadingFactor);
+            double pkGenerationTime = arrivalTimes[pkCounter];
+            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkGenerationTime, pkname, replicaRelativeOffsets, snr, spreadingFactor);
         }
 
         pkCounter++;        // Increment packet counter
