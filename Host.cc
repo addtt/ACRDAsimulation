@@ -144,6 +144,7 @@ void Host::initialize()
     simtime_t firstArrival;
     if (arrivalType == HEAVY_TRAFFIC) {
         firstArrival = 0;
+        arrivalTimes.push_back(firstArrival.dbl());
     }
     else if (arrivalType == EXTERNAL) {
         firstArrival = *arrTimesIter;
@@ -151,6 +152,7 @@ void Host::initialize()
     }
     else if (arrivalType == POISSON) {
         firstArrival = (&par("randExpUnity"))->doubleValue() * meanInterarrival;
+        arrivalTimes.push_back(firstArrival.dbl());
     }
     scheduleAt(firstArrival, startFrameEvent);
 }
@@ -166,11 +168,21 @@ void Host::handleMessage(cMessage *msg)
 
         simtime_t nextStartFrame = simTime() + T_FRAME;
         if (arrivalType == EXTERNAL) {
-            nextStartFrame = std::max(nextStartFrame.dbl(), *arrTimesIter);
+            double nextArrival = *arrTimesIter; // It can actually be in the past if we're backlogged
+            nextStartFrame = std::max(nextStartFrame.dbl(), nextArrival);
             arrTimesIter++;
         }
         else if (arrivalType == POISSON) {
-            nextStartFrame = std::max(nextStartFrame.dbl(), simTime().dbl() + (&par("randExpUnity"))->doubleValue() * meanInterarrival);
+            // Generate each time an interarrival and save each arrival event in a vector
+            double lastArrival = arrivalTimes[arrivalTimes.size() - 1];
+            double nextInterarr = (&par("randExpUnity"))->doubleValue() * meanInterarrival;
+            double nextArrival = lastArrival + nextInterarr; // It can actually be in the past if we're backlogged
+            arrivalTimes.push_back(nextArrival);
+            nextStartFrame = std::max(nextStartFrame.dbl(), nextArrival);
+
+        }
+        else if (arrivalType == HEAVY_TRAFFIC) {
+            arrivalTimes.push_back(nextStartFrame.dbl());
         }
         scheduleAt(nextStartFrame, startFrameEvent);
 
