@@ -160,7 +160,11 @@ public:
     std::vector<PacketInfo> getResolvedPkts();
 
     /**
-     * Returns true if all packets of the window are flagged as resolved.
+     * Returns true if all packets of the window are flagged as resolved. Note that
+     * packets that we are still receiving are not yet counted as unresolved. In particular,
+     * this method compares the number of resolved packets (replicas count) to the total
+     * number of packets in the window, excluding those whose reception ends beyond the current
+     * window. In fact, those packets will always be unresolved since we are still receiving them.
      */
     bool areAllResolved();
 

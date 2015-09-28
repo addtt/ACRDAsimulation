@@ -195,7 +195,11 @@ void AcrdaWnd::updateResolvedFlagsOfReplicas()
 
 bool AcrdaWnd::areAllResolved()
 {
-    return (getNumResolvedPkts() == size());
+    int nCompletelyReceivedPkts = 0;
+    for (int i=0; i<vect.size(); i++)
+        if (vect[i].getEndTime() <= wndLeft + wndLength)
+            nCompletelyReceivedPkts++;
+    return (getNumResolvedPkts() >= nCompletelyReceivedPkts);
 }
 
 
