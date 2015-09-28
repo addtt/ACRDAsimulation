@@ -109,18 +109,18 @@ void Server::handleMessage(cMessage *msg)
                 }
             }
 
+            //EV << "End of iteration " << (iter+1);
+            //EV << rxWnd.toString();
+            //EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
+
             // If no new resolvable packets exist, break the loop. This could be because all
             // pkts have been resolved, or because no more pkts can be resolved. The latter
             // case is called loop phenomenon [ACRDA_paper] and [CRDSA_paper].
             // TODO: consider correlation between loop phenomena in overlapping windows
-            if (newResolvableIds.size() == 0) {
+            if (rxWnd.getNewResolvableIndices().size() == 0) {
                 icIterationsHist[iter]++;
                 break;
             }
-
-            //EV << "End of iteration " << (iter+1);
-            //EV << rxWnd.toString();
-            //EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
         }
 
         EV << "   resolved packets: " << rxWnd.getNumResolvedPkts() << endl;
@@ -320,7 +320,7 @@ void Server::finish()
     // Display IC iterations statistics
     strStream << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
-        strStream << i << " iterations: " << icIterationsHist[i] << endl;
+        strStream << (i+1) << " iterations: " << icIterationsHist[i] << endl;
 
     // Display empirical loop probability
     strStream << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";

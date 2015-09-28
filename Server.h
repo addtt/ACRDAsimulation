@@ -50,7 +50,7 @@ class Server : public cSimpleModule
     std::vector<int> numReceivedPackets;
     std::vector<int> numSuccessfulPackets;
     std::vector<int> numAttemptedPackets;
-    std::vector<int> icIterationsHist;
+    std::vector<int> icIterationsHist;  // The number of iterations is the index of the vector plus 1.
     int loopEvents;     // Number of loop phenomena
     int wndShiftEvents; // Number of window shifts
     std::vector<double> avgGlobalDelays;    // It contains the cumulative sum of delays until the avg is computed in the end.
