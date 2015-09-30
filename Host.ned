@@ -26,6 +26,7 @@ simple Host
         double meanInterarr @unit(s);  // packet mean interarrival time
         volatile double randExpUnity @unit(s);
         volatile double randSnrDistrib;
+        string randSnrDistribStr;
         int defaultSpreadingFactor;
         @display("i=device/pc_s");
 }

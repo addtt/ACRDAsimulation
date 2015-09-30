@@ -25,13 +25,15 @@ namespace acrda {
 class Server : public cSimpleModule
 {
   private:
+
+    // Network parameters
     int numHosts;       // Number of hosts
     double wndLength;   // Window size in seconds
     double wndShift;    // Window shift in seconds
     int numIterIC;      // Number of iterations for IC
     int N_REP;          // Total number of replicas in one frame
     double sinrThresh;  // Linear threshold for SINR
-    int maxSf;  // Max SF for all the system. The receive wnd size is proportional to maxSf.
+    int maxSf;          // Max SF for all the system. The receive wnd size is proportional to maxSf.
 
     // state variables, event pointers
     bool nowReceiving;              // True if and only if the server is receiving

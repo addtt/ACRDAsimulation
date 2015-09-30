@@ -252,7 +252,40 @@ void Server::finish()
     EV << "\n\n\n";
     EV << "Simulation duration: " << simTime() << endl;
 
-    std::ostringstream strStream;
+    std::ostringstream consoleStream;
+    std::ostringstream logStream;
+
+
+    // --- Write system parameters to log file.
+
+    // Get network module's handle, and some network parameters
+    cModule *acrdaNetworkModule;
+    acrdaNetworkModule = simulation.getModuleByPath("Acrda");
+    if (!acrdaNetworkModule) error("Acrda network module not found");
+    int nSlots = acrdaNetworkModule->par("nSlots");
+    double tFrame = acrdaNetworkModule->par("tFrame");
+
+
+    logStream << "SimulationTime," << simTime().dbl() << endl;
+    logStream << "NumHosts,"       << numHosts << endl;
+    logStream << "NumReplicas,"    << N_REP << endl;
+    logStream << "NumSlots,"       << nSlots << endl;
+    logStream << "FrameDuration,"  << tFrame << endl;
+    logStream << "MaxICiterations,"<< numIterIC << endl;
+    logStream << "MaxSF,"          << maxSf << endl;
+    logStream << "WindowLength,"   << wndLength << endl;
+    logStream << "WindowShift,"    << wndShift << endl;
+    logStream << "SINRthreshold,"  << sinrThresh << endl;
+
+    logStream << "\nHostNumber,SF,delay,arrivalType,mean interarrival,SNR distribution,avg SNR" << endl;
+    for (int i=0; i<numHosts; i++) {
+        std::string hostString = "host[" + std::to_string(i) + "]";
+        cModule *currHost = simulation.getModuleByPath(hostString.c_str());
+        if (!currHost) error("Host module not found");
+        logStream << i << "," << (int)currHost->par("defaultSpreadingFactor") << "," << (double)currHost->par("radioDelay")
+                << "," << acrdaNetworkModule->par("arrivalType").str() << "," << (double)currHost->par("meanInterarr")
+                << "," << currHost->par("randSnrDistribStr").str() << "," << (double)currHost->par("defaultAvgSnrLinear") << endl;
+    }
 
     // Compute number of attempted packets for each host.
     // It is the ceiling of the number of received packets divided by the number of replicas.
@@ -277,18 +310,27 @@ void Server::finish()
 
 
     // Display number of received packets (including replicas) and successful ones, for each host.
-    strStream << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
+    consoleStream << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
     for (int i=0; i<numHosts; i++) {
-        strStream << "From host " << i << ":\t\t";
-        strStream << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        strStream << endl;
+        consoleStream << "From host " << i << ":\t\t";
+        consoleStream << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
+        consoleStream << endl;
+    }
+    logStream << "\nHostNumber,Rcvd (w/replicas),Attempted,Successful\n";
+    for (int i=0; i<numHosts; i++) {
+        logStream << i << "," << numReceivedPackets[i] << "," << numAttemptedPackets[i]
+                << "," << numSuccessfulPackets[i] << endl;
     }
 
     // Display success rate statistics
-    strStream << "\n\nSuccess rate\n";
+    consoleStream << "\n\nSuccess rate\n";
     for (int i=0; i<numHosts; i++)
-        strStream << "  host " << i << ": " << successRates[i] << endl;
-    strStream << "  total : " << systemSuccessRate << endl;
+        consoleStream << "  host " << i << ": " << successRates[i] << endl;
+    consoleStream << "  total : " << systemSuccessRate << endl;
+    logStream << "\nHostNumber,Success rate\n";
+    for (int i=0; i<numHosts; i++)
+        logStream << i << "," << successRates[i] << endl;
+    logStream << "all," << systemSuccessRate << endl;
 
 
     // Compute throughput of the system and of each host (pkts per second)
@@ -300,10 +342,14 @@ void Server::finish()
     }
 
     // Display throughput statistics
-    strStream << "\n\nThroughput (packets per second)\n";
+    consoleStream << "\n\nThroughput (packets per second)\n";
     for (int i=0; i<numHosts; i++)
-        strStream << "  host " << i << ": " << hostThrput[i] << endl;
-    strStream << "  total : " << sysThrput << endl;
+        consoleStream << "  host " << i << ": " << hostThrput[i] << endl;
+    consoleStream << "  total : " << sysThrput << endl;
+    logStream << "\nHostNumber,Throughput (packets per second)\n";
+    for (int i=0; i<numHosts; i++)
+        logStream << i << "," << hostThrput[i] << endl;
+    logStream << "all," << sysThrput << endl;
 
 
     // Compute average global delays by dividing the cumulative sum by the number of resolved packets for each host
@@ -311,29 +357,37 @@ void Server::finish()
         avgGlobalDelays[i] /= numSuccessfulPackets[i];
 
     // Display delay statistics
-    strStream << "\n\nGlobal delay (average)\n";
+    consoleStream << "\n\nGlobal delay (average)\n";
     for (int i=0; i<numHosts; i++)
-        strStream << "  host " << i << ": " << avgGlobalDelays[i] << endl;
+        consoleStream << "  host " << i << ": " << avgGlobalDelays[i] << endl;
+    logStream << "\nHostNumber,Global delay (average)\n";
+    for (int i=0; i<numHosts; i++)
+        logStream << i << "," << avgGlobalDelays[i] << endl;
 
 
 
     // Display IC iterations statistics
-    strStream << "\nIC iterations:\n";
+    consoleStream << "\nIC iterations:\n";
     for (int i=0; i<numIterIC; i++)
-        strStream << (i+1) << " iterations: " << icIterationsHist[i] << endl;
+        consoleStream << (i+1) << " iterations: " << icIterationsHist[i] << endl;
+    logStream << "\nIC iterations,Count\n";
+    for (int i=0; i<numIterIC; i++)
+        logStream << (i+1) << "," << icIterationsHist[i] << endl;
 
     // Display empirical loop probability
-    strStream << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
+    consoleStream << "\nNumber of loop events: " << loopEvents << " (" << (((double)loopEvents) / wndShiftEvents * 100) << "% of wnd shifts)\n";
+    logStream << "\nNumber of loop events," << loopEvents << endl << "Number of wnd shifts," << wndShiftEvents << endl;
 
-    strStream << "\n\n";
-    std::string logString = strStream.str();
+    consoleStream << "\n\n";
+    std::string consoleString = consoleStream.str();
+    std::string logString = logStream.str();
 
 
     // --- PRINT
 
     // Print to cout
     std::cout << "\n\n";
-    std::cout << logString;
+    std::cout << consoleString;
     std::cout.flush();
 
     // Retrieve time and define name of logfile
