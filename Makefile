@@ -128,7 +128,9 @@ $O/Host.o: Host.cc \
 $O/PacketInfo.o: PacketInfo.cc \
 	PacketInfo.h
 $O/Server.o: Server.cc \
+	AcrdaPkt.h \
 	AcrdaWnd.h \
+	Host.h \
 	PacketInfo.h \
 	Server.h
 

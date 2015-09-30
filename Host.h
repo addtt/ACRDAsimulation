@@ -25,18 +25,12 @@ class Host : public cSimpleModule
 
     // Parameters
 
-    simtime_t radioDelay;   // Propagation delay from this host to the server
     int N_REP;          // Number of replicas in a frame, for each packet (including itself)
     int N_SLOTS;        // Number of slots in a frame
     double T_FRAME;     // Frame duration
     double T_PKT_MAX;   // Slot duration
     double PKDURATION;  // Transmission time of a packet
     ArrivalType arrivalType;
-
-    double avgSnrLinear;    // Average SNR for this host, linear
-
-    // Parameters and variables for the Poisson case
-    double meanInterarrival; // Mean interarrival time for the Poisson case
 
     bool haveDataFile;
     std::string arrivalsFileName;
@@ -66,6 +60,11 @@ class Host : public cSimpleModule
     int backlogEvents;  // Number of backlog events
 
     double avgSnr = 0;
+
+  public:
+    simtime_t radioDelay;   // Propagation delay from this host to the server
+    double avgSnrLinear;    // Average SNR for this host, linear
+    double meanInterarrival; // Mean interarrival time for the Poisson case
     int spreadingFactor;
 
   public:

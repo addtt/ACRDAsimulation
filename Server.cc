@@ -9,6 +9,7 @@
 
 
 #include "Server.h"
+#include "Host.h"
 
 namespace acrda {
 
@@ -282,9 +283,9 @@ void Server::finish()
         std::string hostString = "host[" + std::to_string(i) + "]";
         cModule *currHost = simulation.getModuleByPath(hostString.c_str());
         if (!currHost) error("Host module not found");
-        logStream << i << "," << (int)currHost->par("defaultSpreadingFactor") << "," << (double)currHost->par("radioDelay")
-                << "," << acrdaNetworkModule->par("arrivalType").str() << "," << (double)currHost->par("meanInterarr")
-                << "," << currHost->par("randSnrDistribStr").str() << "," << (double)currHost->par("defaultAvgSnrLinear") << endl;
+        logStream << i << "," << ((Host *)currHost)->spreadingFactor << "," << ((Host *)currHost)->radioDelay
+                << "," << acrdaNetworkModule->par("arrivalType").str() << "," << ((Host *)currHost)->meanInterarrival
+                << "," << currHost->par("randSnrDistribStr").str() << "," << ((Host *)currHost)->avgSnrLinear << endl;
     }
 
     // Compute number of attempted packets for each host.
