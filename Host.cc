@@ -216,10 +216,15 @@ void Host::handleMessage(cMessage *msg)
             double replicaFrameOffset = replicaLocs[i] * T_PKT_MAX;
             scheduleAt(simTime() + replicaFrameOffset, startTxEvent[i]);
 
-            // Create the current packet
-            double snr = (&par("randSnrDistrib"))->doubleValue() * avgSnrLinear;
-            avgSnr += snr;
+            // Compute the SNR for this packet. Generate SF SNRs and use their average as SNR for this packet.
+            double snrSum = 0;
+            for (int j=0; j<spreadingFactor; j++)
+                snrSum += (&par("randSnrDistrib"))->doubleValue();
+            double snr = snrSum * avgSnrLinear / spreadingFactor; // it's like multiplying by avgSnrLinear inside the loop
+            avgSnr += snr; // average SNR for this host, for debug purposes
             double pkGenerationTime = arrivalTimes[pkCounter];
+
+            // Create the packet
             framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkGenerationTime, pkname, snr, spreadingFactor);
         }
 
