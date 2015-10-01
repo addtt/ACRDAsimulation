@@ -29,8 +29,10 @@ simple Server
         
         int numHosts;
         int nRep;
-        double wndLength;
-        double wndShift;
+        int nSlots;
+        double tPkt @unit(s);
+        double wndLengthNorm;
+        double wndShiftNorm;
         int numIterIC;
         double sinrThresh_dB;
         int maxSpreadingFactor;	// Max SF among all the hosts. Recv window is scaled by this number.

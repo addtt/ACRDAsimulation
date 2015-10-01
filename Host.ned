@@ -20,7 +20,7 @@ simple Host
         double radioDelay @unit(s);       // propagation delay of radio link
         int nRep;
         int nSlots;
-        double tFrame;
+        double tPkt @unit(s);
         double defaultAvgSnrLinear;
         string arrivalType;
         double meanInterarr @unit(s);  // packet mean interarrival time

@@ -34,10 +34,13 @@ Server::~Server()
 void Server::initialize()
 {
     numHosts = par("numHosts");
+    nSlots = par("nSlots");
+    tPkt = par("tPkt");
     N_REP = par("nRep");
     maxSf = par("maxSpreadingFactor");
-    wndLength = par("wndLength").doubleValue() * maxSf;
-    wndShift = par("wndShift").doubleValue() * maxSf;
+    tFrameServer = maxSf * tPkt * nSlots;
+    wndLength = par("wndLengthNorm").doubleValue() * tFrameServer;
+    wndShift = par("wndShiftNorm").doubleValue() * tFrameServer;
     numIterIC = par("numIterIC");
     double sinrThresh_dB = par("sinrThresh_dB");
     std::cout << "Server: SINR threshold is " << sinrThresh_dB << " dB" << endl;
@@ -263,15 +266,13 @@ void Server::finish()
     cModule *acrdaNetworkModule;
     acrdaNetworkModule = simulation.getModuleByPath("Acrda");
     if (!acrdaNetworkModule) error("Acrda network module not found");
-    int nSlots = acrdaNetworkModule->par("nSlots");
-    double tFrame = acrdaNetworkModule->par("tFrame");
 
 
     logStream << "SimulationTime," << simTime().dbl() << endl;
     logStream << "NumHosts,"       << numHosts << endl;
     logStream << "NumReplicas,"    << N_REP << endl;
     logStream << "NumSlots,"       << nSlots << endl;
-    logStream << "FrameDuration,"  << tFrame << endl;
+    logStream << "FrameDurationAtServer,"  << tFrameServer << endl;
     logStream << "MaxICiterations,"<< numIterIC << endl;
     logStream << "MaxSF,"          << maxSf << endl;
     logStream << "WindowLength,"   << wndLength << endl;

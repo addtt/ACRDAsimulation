@@ -28,6 +28,9 @@ class Server : public cSimpleModule
 
     // Network parameters
     int numHosts;       // Number of hosts
+    int nSlots;
+    double tPkt;
+    double tFrameServer;
     double wndLength;   // Window size in seconds
     double wndShift;    // Window shift in seconds
     int numIterIC;      // Number of iterations for IC

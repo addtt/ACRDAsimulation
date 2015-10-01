@@ -18,7 +18,7 @@ network Acrda
         int numHosts;  // number of hosts
         int nRep;
         int nSlots;
-        double tFrame;
+        double tPkt @unit(s);
         string arrivalType;
         //double txRate @unit(bps);  // transmission rate
         @display("bgi=background/terrain,s");
@@ -26,11 +26,13 @@ network Acrda
         server: Server {
                 numHosts = numHosts;
                 nRep = nRep;
+                nSlots = nSlots;
+                tPkt = tPkt;
         }
         host[numHosts]: Host {
                 nRep = nRep;
                 nSlots = nSlots;
-                tFrame = tFrame;
+                tPkt = tPkt;
                 arrivalType = arrivalType;
         }
 }
