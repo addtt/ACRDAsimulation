@@ -118,7 +118,7 @@ std::vector<int> AcrdaWnd::getNewResolvableIndices()
                     else //if (expr3)
                         overlapFactor = 1;
 
-                    denom += overlapFactor + p2.getSnr();
+                    denom += overlapFactor * p2.getSnr();
 
                     // TODO Stop immediately if we see that we have fallen below threshold: isThisResolvable serves this purpose
                 }
