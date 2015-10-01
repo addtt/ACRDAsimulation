@@ -19,7 +19,6 @@ private:
     int pkIdx;
     double snr; // Linear SNR
     int sf;     // Spreading Factor
-    std::vector<double> replicaOffsets;
     bool resolved;
     simtime_t generationTime; // arrival time at the sender's buffer
     simtime_t startTime; // start of reception
@@ -29,7 +28,7 @@ private:
 public:
     PacketInfo() {};
     PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime);
-    PacketInfo(int hostIdx, int pkIdx, double snr, int sf, std::vector<double> replicaOffsets,
+    PacketInfo(int hostIdx, int pkIdx, double snr, int sf,
             bool resolved, simtime_t arrivalTime, simtime_t startTime, simtime_t endTime);
     virtual ~PacketInfo();
     bool operator==(const PacketInfo &other) const;

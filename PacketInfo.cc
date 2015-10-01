@@ -15,14 +15,13 @@ PacketInfo::PacketInfo(AcrdaPkt *pkt, simtime_t startTime, simtime_t endTime)
     snr = pkt->getSnr();
     sf = pkt->getSpreadingFactor();
     generationTime = pkt->getGenerationTime();
-    replicaOffsets = pkt->getReplicaOffs();
     resolved = false;
 }
 
-PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, int sf, std::vector<double> replicaOffsets,
+PacketInfo::PacketInfo(int hostIdx, int pkIdx, double snr, int sf,
         bool resolved, simtime_t generationTime, simtime_t startTime, simtime_t endTime)
-    : hostIdx{hostIdx}, pkIdx{pkIdx}, snr{snr}, sf{sf}, replicaOffsets{replicaOffsets},
-      resolved{resolved}, generationTime{generationTime}, startTime{startTime}, endTime{endTime}
+    : hostIdx{hostIdx}, pkIdx{pkIdx}, snr{snr}, sf{sf}, resolved{resolved},
+      generationTime{generationTime}, startTime{startTime}, endTime{endTime}
 {}
 
 
@@ -33,7 +32,6 @@ bool PacketInfo::operator==(const PacketInfo &other) const {
     return (hostIdx == other.hostIdx) &&
             (pkIdx == other.pkIdx) &&
             (snr == other.snr) &&
-            (replicaOffsets == other.replicaOffsets) &&
             (generationTime == other.generationTime) &&
             (resolved == other.resolved) &&
             (startTime == other.startTime) &&

@@ -216,19 +216,11 @@ void Host::handleMessage(cMessage *msg)
             double replicaFrameOffset = replicaLocs[i] * T_PKT_MAX;
             scheduleAt(simTime() + replicaFrameOffset, startTxEvent[i]);
 
-            // Take all replica offsets except the current one, center them around the current one
-            // TODO: We don't need this
-            std::vector<double> replicaRelativeOffsets(N_REP-1);
-            for (int j=0; j<N_REP-1; j++) {
-                int shiftIdx = (j>=i) ? 1 : 0;
-                replicaRelativeOffsets[j] = (replicaLocs[j + shiftIdx] - replicaLocs[i]) * T_PKT_MAX;
-            }
-
             // Create the current packet
             double snr = (&par("randSnrDistrib"))->doubleValue() * avgSnrLinear;
             avgSnr += snr;
             double pkGenerationTime = arrivalTimes[pkCounter];
-            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkGenerationTime, pkname, replicaRelativeOffsets, snr, spreadingFactor);
+            framePkts[i] = AcrdaPkt(thisHostsId, pkCounter, pkGenerationTime, pkname, snr, spreadingFactor);
         }
 
         pkCounter++;        // Increment packet counter
