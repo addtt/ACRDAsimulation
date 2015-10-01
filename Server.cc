@@ -288,18 +288,33 @@ void Server::finish()
                 << "," << currHost->par("randSnrDistribStr").str() << "," << ((Host *)currHost)->avgSnrLinear << endl;
     }
 
-    // Compute number of attempted packets for each host.
+
+
+    // --- Write statistics to log file (and to console)
+
+    // Compute total number of received packets (with replicas)
+    int numReceivedPacketsTot = 0;
+    for (int i=0; i<numHosts; i++)
+        numReceivedPacketsTot += numReceivedPackets[i];
+
+    // Compute number of attempted packets for each host and in total.
     // It is the ceiling of the number of received packets divided by the number of replicas.
     // In fact the server module receives all packets, even the colliding ones, and knows
     // everything about them. Therefore the server module receives a number of packets equal
     // to a multiple of the number of replicas N_REP, plus a number of replicas of the last
     // packet that is strictly smaller than N_REP.
-    for (int i=0; i<numHosts; i++)
+    int numAttemptedPacketsTot = 0;
+    for (int i=0; i<numHosts; i++) {
         numAttemptedPackets[i] = ceil((((double)numReceivedPackets[i]) / N_REP));
+        numAttemptedPacketsTot += numAttemptedPackets[i];
+    }
 
-    // Compute number of successful packets for each host.
-    for (int i=0; i<numHosts; i++)
+    // Compute number of successful packets for each host and in total.
+    int numSuccessfulPacketsTot = 0;
+    for (int i=0; i<numHosts; i++) {
         numSuccessfulPackets[i] = successfulPackets[i].size();
+        numSuccessfulPacketsTot += numSuccessfulPackets[i];
+    }
 
     // Compute success rate of the system and of each host
     std::vector<double> successRates(numHosts);
@@ -309,31 +324,6 @@ void Server::finish()
         systemSuccessRate += successRates[i] / numHosts;
     }
 
-
-    // Display number of received packets (including replicas) and successful ones, for each host.
-    consoleStream << "\t\tRcvd (w/replicas)    Attempted       Successful\n";
-    for (int i=0; i<numHosts; i++) {
-        consoleStream << "From host " << i << ":\t\t";
-        consoleStream << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i];
-        consoleStream << endl;
-    }
-    logStream << "\nHostNumber,Rcvd (w/replicas),Attempted,Successful\n";
-    for (int i=0; i<numHosts; i++) {
-        logStream << i << "," << numReceivedPackets[i] << "," << numAttemptedPackets[i]
-                << "," << numSuccessfulPackets[i] << endl;
-    }
-
-    // Display success rate statistics
-    consoleStream << "\n\nSuccess rate\n";
-    for (int i=0; i<numHosts; i++)
-        consoleStream << "  host " << i << ": " << successRates[i] << endl;
-    consoleStream << "  total : " << systemSuccessRate << endl;
-    logStream << "\nHostNumber,Success rate\n";
-    for (int i=0; i<numHosts; i++)
-        logStream << i << "," << successRates[i] << endl;
-    logStream << "all," << systemSuccessRate << endl;
-
-
     // Compute throughput of the system and of each host (pkts per second)
     double sysThrput = 0;
     std::vector<double> hostThrput(numHosts);
@@ -342,15 +332,26 @@ void Server::finish()
         sysThrput += hostThrput[i];
     }
 
-    // Display throughput statistics
-    consoleStream << "\n\nThroughput (packets per second)\n";
-    for (int i=0; i<numHosts; i++)
-        consoleStream << "  host " << i << ": " << hostThrput[i] << endl;
-    consoleStream << "  total : " << sysThrput << endl;
-    logStream << "\nHostNumber,Throughput (packets per second)\n";
-    for (int i=0; i<numHosts; i++)
-        logStream << i << "," << hostThrput[i] << endl;
-    logStream << "all," << sysThrput << endl;
+
+    // Display number of received packets (including replicas), successful ones, success rate and throughput, for each host.
+    consoleStream << "\t\tRcvd (w/replicas)    Attempted       Successful     Succ rate      Throughput\n";
+    for (int i=0; i<numHosts; i++) {
+        consoleStream << "From host " << i << ":\t\t";
+        consoleStream << numReceivedPackets[i] << "\t\t" << numAttemptedPackets[i] << "\t\t" << numSuccessfulPackets[i]
+                  << "\t\t" << successRates[i] << "\t\t" << hostThrput[i];
+        consoleStream << endl;
+    }
+
+
+
+    // Save number of received packets (including replicas), successful ones, success rate and throughput, for each host.
+    logStream << "\nHostNumber,Rcvd (w/replicas),Attempted,Successful,Success Rate,Throughput\n";
+    for (int i=0; i<numHosts; i++) {
+        logStream << i << "," << numReceivedPackets[i] << "," << numAttemptedPackets[i]
+                << "," << numSuccessfulPackets[i] << "," << successRates[i] << "," << hostThrput[i] << endl;
+    }
+    logStream << "all," << numReceivedPacketsTot << "," << numAttemptedPacketsTot << ","
+            << numSuccessfulPacketsTot << "," << systemSuccessRate << "," << sysThrput << endl;
 
 
     // Compute average global delays by dividing the cumulative sum by the number of resolved packets for each host
@@ -361,6 +362,8 @@ void Server::finish()
     consoleStream << "\n\nGlobal delay (average)\n";
     for (int i=0; i<numHosts; i++)
         consoleStream << "  host " << i << ": " << avgGlobalDelays[i] << endl;
+
+    // Save delay statistics
     logStream << "\nHostNumber,Global delay (average)\n";
     for (int i=0; i<numHosts; i++)
         logStream << i << "," << avgGlobalDelays[i] << endl;
