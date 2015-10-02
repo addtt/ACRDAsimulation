@@ -5,6 +5,10 @@
 
 clear, close all
 
+BLUE_COLOR = [0 0.4470 0.7410];
+RED_COLOR  = [0.8500 0.3250 0.0980];
+YELL_COLOR = [0.9290 0.6940 0.1250];
+
 fileList = dir('../outputfiles/');
 i=1;
 for i_dummy=1:length(fileList)
@@ -35,14 +39,16 @@ for file_idx = 1:length(filenames)
    sysParameters(:, file_idx) = [simtime, numHosts, numReplicas, numSlots, frameDurationAtServer,...
       maxIcIter, maxSf, wndLen, wndShift, snirThresh].';
    
+   % Skip lines
    for i = 1 : (2 + numHosts + 2)
       fgets(fid);
    end
    
-   hostData(:,:,file_idx) = csvread(filename, (14+numHosts),   0, [(14+numHosts),   0, (14+2*numHosts-1), 5]);
+   hostData{file_idx} = csvread(filename, (14+numHosts),   0, [(14+numHosts),   0, (14+2*numHosts-1), 5]);
    systemData(:,file_idx) = csvread(filename, (14+2*numHosts), 1, [(14+2*numHosts), 1, (14+2*numHosts), 5]);
    succRate  (file_idx) = systemData(4,file_idx);
    throughput(file_idx) = systemData(5,file_idx);
+   offeredload(file_idx) = systemData(2,file_idx) / simtime; % attempted packets divided by time
    
 %    i2 = 1;
 %    line = '';
@@ -73,3 +79,49 @@ for file_idx = 1:length(filenames)
 %    clear data
    
 end
+
+% Compute throughput average with fixed number of hosts
+% numHosts = unique(sysParameters(2,:));
+% for i=1:length(numHosts)
+%    indices = find(sysParameters(2,:) == numHosts(i));
+%    throughputByNumHosts{i} = throughput(indices).';
+%    throughputByNumHosts_avg(i) = mean(throughputByNumHosts{i});
+% end
+% figure, scatter(sysParameters(2,:), throughput)
+% hold on
+% plot(numHosts, throughputByNumHosts_avg, 'Color', BLUE_COLOR)
+% title('Throughput')
+% xlabel('Number of hosts'), ylabel('Throughput (pk/s)')
+% grid on, box on
+
+offeredload_vs_thrpt = sortrows([offeredload', throughput']);
+
+figure, plot(offeredload_vs_thrpt(:,1), offeredload_vs_thrpt(:,2), '-d');
+title('Throughput')
+xlabel('Offered load (pk/s)'), ylabel('Throughput (pk/s)')
+grid on, box on
+
+offeredload_vs_pkloss = sortrows([offeredload', (1-succRate)']);
+
+figure, plot(offeredload_vs_pkloss(:,1), offeredload_vs_pkloss(:,2), '-d');
+title('Packet loss rate')
+xlabel('Offered load (pk/s)'), ylabel('Packet loss rate')
+grid on, box on
+
+% nhosts_vs_thrpt = sortrows([sysParameters(2,:)', throughput']);
+% 
+% figure, plot(nhosts_vs_thrpt(:,1), nhosts_vs_thrpt(:,2), '-d');
+% title('Throughput')
+% xlabel('Number of hosts'), ylabel('Throughput (pk/s)')
+% grid on, box on
+
+% nhosts_vs_pkloss = sortrows([sysParameters(2,:)', (1-succRate)']);
+% 
+% figure, plot(nhosts_vs_pkloss(:,1), nhosts_vs_pkloss(:,2), '-d');
+% title('Packet loss rate')
+% xlabel('Number of hosts'), ylabel('Packet loss rate')
+% grid on, box on
+
+
+fclose('all');
+clear ans BLUE_COLOR RED_COLOR YELL_COLOR filename i i_dummy file_idx fid indices fileList
