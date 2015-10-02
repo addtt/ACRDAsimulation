@@ -395,16 +395,17 @@ void Server::finish()
     std::cout << consoleString;
     std::cout.flush();
 
-    // Retrieve time and define name of logfile
-    time_t rawtime;
-    struct tm * timeinfo;
-    char timecstring [30];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime(timecstring,30,"%Y%m%d-%H%M%S",timeinfo);
-    std::string timeStr = timecstring;
-    std::string logFileName = "outputfiles/acrda-" + timeStr + ".log";
+    // Define name of logfile
+    //time_t rawtime;
+    //struct tm * timeinfo;
+    //char timecstring [30];
+    //time(&rawtime);
+    //timeinfo = localtime(&rawtime);
+    //strftime(timecstring,30,"%Y%m%d-%H%M%S",timeinfo);
+    //std::string nameStr = timecstring;
+    std::string nameStr = simulation.getActiveEnvir()->getConfigEx()->getVariable("runid");
+    std::replace( nameStr.begin(), nameStr.end(), ':', '-'); // replace all ':' to '-'
+    std::string logFileName = "outputfiles/acrda-" + nameStr + ".log";
 
     // Open and print to log file
     std::ofstream logFile (logFileName, std::ios::out | std::ios::app);
