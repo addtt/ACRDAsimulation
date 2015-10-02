@@ -4,3 +4,5 @@ results/*
 out/*
 
 *.log
+
+Makefile
