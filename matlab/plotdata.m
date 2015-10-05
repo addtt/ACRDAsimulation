@@ -11,6 +11,7 @@ end
 
 figure(1), hold on
 figure(2), hold on
+figure(3), hold on
 for file_idx = 1:length(inputfilenames)
    
    load(inputfilenames{file_idx});
@@ -20,6 +21,10 @@ for file_idx = 1:length(inputfilenames)
    
    figure(2)
    plot(offeredload_vs_pkloss(:,1), offeredload_vs_pkloss(:,2), '-d');
+   
+   
+   figure(3)
+   plot(offeredload_vs_thrpt(:,1)/numHosts, offeredload_vs_thrpt(:,2)/numHosts, '-d');
    
 end
 
@@ -36,3 +41,9 @@ xlabel('Offered load (pk/s)'), ylabel('Packet loss rate')
 grid on, box on
 legend(inputfilenames)
 %legend('\tau=26, SF=1', '\tau=26, SF=2', '\tau=26, SF=4', '\tau=52, SF=2', '\tau=52, SF=4', '\tau=52, SF=8', '\tau=208, SF=4')
+
+figure(3)
+title('Throughput per user')
+xlabel('Offered load (pk/s/usr)'), ylabel('Throughput per user (pk/s/usr)')
+grid on, box on
+legend(inputfilenames)
