@@ -9,10 +9,16 @@ for i_dummy=1:length(fileList)
    end
 end
 
+for i=1:length(inputfilenames)
+   legendEntries{i} = strrep(inputfilenames{i}, '_', ', ');
+   legendEntries{i} = strrep(legendEntries{i}, '.mat', '');
+end
+
 figure(1), hold on
 figure(2), hold on
 figure(3), hold on
 figure(4), hold on
+figure(5), hold on
 for file_idx = 1:length(inputfilenames)
    
    load(inputfilenames{file_idx});
@@ -29,28 +35,38 @@ for file_idx = 1:length(inputfilenames)
    figure(4)
    plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2), '-d'); 
    
+   figure(5)
+   plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts, '-d'); 
 end
 
 figure(1)
-title('Throughput')
-xlabel('Offered load (pk/s)'), ylabel('Throughput (pk/s)')
+title('System throughput')
+xlabel('Offered load (pk/s)'), ylabel('System throughput (pk/s)')
 grid on, box on
-legend(inputfilenames)
+legend(legendEntries)
 
 figure(2)
 title('Packet loss rate')
 xlabel('Offered load (pk/s)'), ylabel('Packet loss rate')
 grid on, box on
-legend(inputfilenames)
+legend(legendEntries)
 
 figure(3)
 title('Throughput per user')
 xlabel('Offered load (pk/s/usr)'), ylabel('Throughput per user (pk/s/usr)')
 grid on, box on
-legend(inputfilenames)
+legend(legendEntries)
 
 figure(4)
-title('Throughput')
-xlabel('Offered load (pk/s)'), ylabel('Throughput (pk/s)')
+title('System throughput')
+xlabel('System arrival rate (pk/s)'), ylabel('System throughput (pk/s)')
 grid on, box on
-legend(inputfilenames)
+legend(legendEntries)
+
+figure(5)
+title('Throughput per user')
+xlabel('Average arrival rate (pk/s/usr)'), ylabel('Throughput per user (pk/s/usr)')
+grid on, box on
+legend(legendEntries)
+
+close(1,2,3)
