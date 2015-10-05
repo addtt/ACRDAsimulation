@@ -27,10 +27,12 @@ figure(1)
 title('Throughput')
 xlabel('Offered load (pk/s)'), ylabel('Throughput (pk/s)')
 grid on, box on
-legend('SF=1', 'SF=2', 'SF=4', 'SF=8')
+legend(inputfilenames)
+%legend('\tau=26, SF=1', '\tau=26, SF=2', '\tau=26, SF=4', '\tau=52, SF=2', '\tau=52, SF=4', '\tau=52, SF=8', '\tau=208, SF=4')
 
 figure(2)
 title('Packet loss rate')
 xlabel('Offered load (pk/s)'), ylabel('Packet loss rate')
 grid on, box on
-legend('SF=1', 'SF=2', 'SF=4', 'SF=8')
+legend(inputfilenames)
+%legend('\tau=26, SF=1', '\tau=26, SF=2', '\tau=26, SF=4', '\tau=52, SF=2', '\tau=52, SF=4', '\tau=52, SF=8', '\tau=208, SF=4')
