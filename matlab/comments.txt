@@ -1,4 +1,5 @@
 -- userThruputCurve_varyingNhostSf
+See log01 for logs
 
 Each curve has fixed number of hosts, spreading factor and all other parameters. We vary the arrival rate per user to get one curve.
 If the interference is not heavy, then the throughput per user increases linearly until the channel capacity is reached and the users are unstable and backlogged, so the throughput saturates.
@@ -7,3 +8,18 @@ For SF=2 and few (5) hosts, the interference is small, thus the throughput satur
 Increasing the SF yields a worse performance if the interference is small (i.e. if there are few hosts), but as soon as the number of hosts increases, using a higher SF yields better results. The higher the SF, the higher the number of users after which the system crashes.
 Note that the interference is small even if we simply have small traffic from each user, but in that case using a higher SF is not a problem from a throughput point of view (the users are still stable even if we increase rho -- the load factor)
 
+
+-- userThruputCurve_varyingSf
+See log02 for logs
+
+We now fix the number of hosts in the whole plot, and for each curve we fix the SF. Then we change the arrival rate for each host, in order to get a throughput curve as function of the arrival rate. In this case the system throughput and the user throughput are proportional.
+We observe that with SF=1 and SF=2 the system becomes unstable. With SF>=3 it saturates because the users become backlogged (their buffers become unstable), not because of the interference, which can be resolved.
+Since the saturation is due to the users' queues and not to the interference in the system, if we further increase SF the maximum achievable throughput becomes inversely proportional to SF. This is because SF is proportional to the frame length and therefore also to the service time of each user.
+
+
+----
+
+
+If we only look at the system throughput, then we can get better and better results just increasing the SF to get better at IC, decreasing the arrival rate per user in order to avoid instability (the frames are longer), and increasing the number of users so as to get a higher throughput than before.
+This is feasible but each user ends up with a very limited throughput.
+Another problem is that we need a lot of IC iterations, so if they are limited there is a point after which the situation gets worse.

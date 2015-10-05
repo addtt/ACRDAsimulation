@@ -33,10 +33,10 @@ for file_idx = 1:length(inputfilenames)
    plot(offeredload_vs_thrpt(:,1)/numHosts, offeredload_vs_thrpt(:,2)/numHosts, '-d');
    
    figure(4)
-   plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2), '-d'); 
+   plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2)); 
    
    figure(5)
-   plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts, '-d'); 
+   plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts); 
 end
 
 figure(1)
