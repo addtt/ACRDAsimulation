@@ -36,19 +36,23 @@ for file_idx = 1:length(filenames)
    wndLen               = str2double(getNextValue(fid));
    wndShift             = str2double(getNextValue(fid));
    snirThresh           = str2double(getNextValue(fid));
-   sysParameters(:, file_idx) = [simtime, numHosts, numReplicas, numSlots, frameDurationAtServer,...
+   sysParams(:, file_idx) = [simtime, numHosts, numReplicas, numSlots, frameDurationAtServer,...
       maxIcIter, maxSf, wndLen, wndShift, snirThresh].';
    
    % Skip lines
-   for i = 1 : (2 + numHosts + 2)
+   for i = 1 : 2
       fgets(fid);
    end
    
-   hostData{file_idx} = csvread(filename, (14+numHosts),   0, [(14+numHosts),   0, (14+2*numHosts-1), 5]);
-   systemData(:,file_idx) = csvread(filename, (14+2*numHosts), 1, [(14+2*numHosts), 1, (14+2*numHosts), 5]);
-   succRate  (file_idx) = systemData(4,file_idx);
-   throughput(file_idx) = systemData(5,file_idx);
-   offeredload(file_idx) = systemData(2,file_idx) / simtime; % attempted packets divided by time
+   hostParams{file_idx} = textscan(fid, '%d%d%f%s%f%s%f', numHosts, 'delimiter',',');
+   %csvread(filename, 12,   0, [12,   0, (12+numHosts-1), 5]);
+   hostResults{file_idx} = csvread(filename, (14+numHosts),   0, [(14+numHosts),   0, (14+2*numHosts-1), 5]);
+   systemResults(:,file_idx) = csvread(filename, (14+2*numHosts), 1, [(14+2*numHosts), 1, (14+2*numHosts), 5]);
+   succRate  (file_idx) = systemResults(4,file_idx);
+   throughput(file_idx) = systemResults(5,file_idx);
+   offeredload(file_idx) = systemResults(2,file_idx) / simtime; % attempted packets divided by time
+   arrivalrates{file_idx} = 1 ./ hostParams{file_idx}{5};
+   systemarrivalrate(file_idx) = sum(arrivalrates{file_idx});
    
 %    i2 = 1;
 %    line = '';
@@ -99,6 +103,13 @@ offeredload_vs_thrpt = sortrows([offeredload', throughput']);
 figure, plot(offeredload_vs_thrpt(:,1), offeredload_vs_thrpt(:,2), '-d');
 title('Throughput')
 xlabel('Offered load (pk/s)'), ylabel('Throughput (pk/s)')
+grid on, box on
+
+arrRate_vs_thrpt = sortrows([systemarrivalrate', throughput']);
+
+figure, plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2), '-d');
+title('Throughput')
+xlabel('System arrival rate (pk/s)'), ylabel('Throughput (pk/s)')
 grid on, box on
 
 offeredload_vs_pkloss = sortrows([offeredload', (1-succRate)']);
