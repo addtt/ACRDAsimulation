@@ -17,6 +17,18 @@ We observe that with SF=1 and SF=2 the system becomes unstable. With SF>=3 it sa
 Since the saturation is due to the users' queues and not to the interference in the system, if we further increase SF the maximum achievable throughput becomes inversely proportional to SF. This is because SF is proportional to the frame length and therefore also to the service time of each user.
 
 
+-- userThruputCurve_comparisonESSA
+See log03 for logs
+
+It's actually pointless to use replicas. The SF is the really useful thing.
+
+
+-- userThruputCurve_comparisonESSA_60hosts
+See log04 for logs
+
+Apparently the same result as with 20 hosts (previous case). The number of hosts may not be the key for finding a scenario in which ACRDA+SF is actually better than E-SSA.
+
+
 ----
 
 

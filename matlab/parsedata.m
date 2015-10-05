@@ -1,4 +1,7 @@
-% This script parses the log files and saves the results in .mat files
+% This script parses the log files in order to save the results in a .mat file.
+% It looks for all acrda logs in ../outputfiles/ and parses them, then puts things
+% together doing statistics and clears useless stuff. Then you can save the whole
+% workspace in the current folder and plotdata will plot data from all files together.
 
 %#ok<*ST2NM>
 %#ok<*SAGROW>

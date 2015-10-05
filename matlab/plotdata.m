@@ -1,3 +1,5 @@
+% Look for all .mat files in the current folder and make the desired plots.
+
 clear, close all
 
 fileList = dir('.');
@@ -36,7 +38,12 @@ for file_idx = 1:length(inputfilenames)
    plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2)); 
    
    figure(5)
-   plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts); 
+   if (strfind(legendEntries{file_idx}, ' s1,'))
+      plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts, '-.');
+   else
+      plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts);
+   end
+      
 end
 
 figure(1)
