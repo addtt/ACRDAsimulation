@@ -108,8 +108,13 @@ grid on, box on
 arrRate_vs_thrpt = sortrows([systemarrivalrate', throughput']);
 
 figure, plot(arrRate_vs_thrpt(:,1), arrRate_vs_thrpt(:,2), '-d');
-title('Throughput')
+title('System throughput')
 xlabel('System arrival rate (pk/s)'), ylabel('Throughput (pk/s)')
+grid on, box on
+
+figure, plot(arrRate_vs_thrpt(:,1)/numHosts, arrRate_vs_thrpt(:,2)/numHosts, '-d');
+title('Throughput per user')
+xlabel('Average arrival rate (pk/s/usr)'), ylabel('Throughput per user (pk/s/usr)')
 grid on, box on
 
 offeredload_vs_pkloss = sortrows([offeredload', (1-succRate)']);
