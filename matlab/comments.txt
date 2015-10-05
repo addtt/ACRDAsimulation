@@ -1,0 +1,9 @@
+-- userThruputCurve_varyingNhostSf
+
+Each curve has fixed number of hosts, spreading factor and all other parameters. We vary the arrival rate per user to get one curve.
+If the interference is not heavy, then the throughput per user increases linearly until the channel capacity is reached and the users are unstable and backlogged, so the throughput saturates.
+In the case of SF=1 we see that with 7 hosts the throughput saturates to a lower value, because the interference cancellation is not effective enough. With 10 hosts it's even worse, since the throughput goes to zero before the users reach instability.
+For SF=2 and few (5) hosts, the interference is small, thus the throughput saturates to half of the value that we had with SF=1 (the service rate is halved). If we increase the number of hosts to 7 and 10, as we did for SF=1, we see that the interfering packets can be resolved, and the throughput per user has the same behaviour as with nHosts=5.
+Increasing the SF yields a worse performance if the interference is small (i.e. if there are few hosts), but as soon as the number of hosts increases, using a higher SF yields better results. The higher the SF, the higher the number of users after which the system crashes.
+Note that the interference is small even if we simply have small traffic from each user, but in that case using a higher SF is not a problem from a throughput point of view (the users are still stable even if we increase rho -- the load factor)
+
