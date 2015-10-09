@@ -8,9 +8,9 @@
 
 clear, close all
 
-BLUE_COLOR = [0 0.4470 0.7410];
-RED_COLOR  = [0.8500 0.3250 0.0980];
-YELL_COLOR = [0.9290 0.6940 0.1250];
+% BLUE_COLOR = [0 0.4470 0.7410];
+% RED_COLOR  = [0.8500 0.3250 0.0980];
+% YELL_COLOR = [0.9290 0.6940 0.1250];
 
 fileList = dir('../outputfiles/');
 i=1;
@@ -20,7 +20,6 @@ for i_dummy=1:length(fileList)
       i=i+1;
    end
 end
-%filenames = {'../outputfiles/acrda-20151001-221350.log'};
 
 for file_idx = 1:length(filenames)
    
@@ -56,34 +55,7 @@ for file_idx = 1:length(filenames)
    offeredload(file_idx) = systemResults(2,file_idx) / simtime; % attempted packets divided by time
    arrivalrates{file_idx} = 1 ./ hostParams{file_idx}{5};
    systemarrivalrate(file_idx) = sum(arrivalrates{file_idx});
-   
-%    i2 = 1;
-%    line = '';
-%    match = 'Irradiances (units of W/m^2 nm), Mean Cosines (Mubars), and Irradiance Reflectance';
-%    while isempty(strfind(line, match)) % loop over the following until the end of the file is reached.
-%       line = fgets(fid); % read in one line
-%       if (feof(fid))
-%          return;
-%       end
-%    end
-%    
-%    for i=1:5
-%       fgets(fid);
-%    end
-%    
-%    i = 1;
-%    line = fgets(fid);
-%    while ~isequal(double(line), [13, 10])
-%       data(i, :) = str2num(line);
-%       line = fgets(fid);
-%       i = i+1;
-%    end
-%    
-%    fclose(fid);
-%    
-%    data = data(:, [3 6]);
-%    save(strcat(filename, '_LUT.mat'), 'data')
-%    clear data
+   maxSfVec(file_idx) = sysParams(7, file_idx);
    
 end
 
@@ -141,6 +113,15 @@ grid on, box on
 % xlabel('Number of hosts'), ylabel('Packet loss rate')
 % grid on, box on
 
+sf_vs_thrpt = sortrows([maxSfVec', throughput']);
+
+figure, plot(sf_vs_thrpt(:,1), sf_vs_thrpt(:,2)/numHosts, '-d');
+title('Throughput varying SF')
+xlabel('Spreading Factor'), ylabel('Throughput per user (pk/s/usr)')
+grid on, box on
+
 
 fclose('all');
 clear ans BLUE_COLOR RED_COLOR YELL_COLOR filename i i_dummy file_idx fid indices fileList
+
+figure(3)
