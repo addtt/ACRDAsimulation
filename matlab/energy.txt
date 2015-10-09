@@ -1,0 +1,7 @@
+Throughput		4			1.25
+SF				240			16
+nSlots			1 			50
+nRep			1 			3
+HeavyTraffic	yes			yes
+Frame length	240ms		800ms
+				1 			3/50
