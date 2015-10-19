@@ -36,6 +36,8 @@ simple Server
         int numIterIC;
         double sinrThresh_dB;
         int maxSpreadingFactor;	// Max SF among all the hosts. Recv window is scaled by this number.
+        
+        double simTimeLimitDouble;
     gates:
         input in @directIn;
 }

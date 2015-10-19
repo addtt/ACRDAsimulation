@@ -60,6 +60,7 @@ void Server::initialize()
 
     endRxEvent = new cMessage("end-reception");
     wndCompleted = new cMessage("window-completed");
+    stopSimulation = new cMessage("stop-simulation");
 
     gate("in")->setDeliverOnReceptionStart(true);
 
@@ -73,6 +74,10 @@ void Server::initialize()
     emit(receiveBeginSignal, 0L);
 
     scheduleAt(wndLength, wndCompleted);
+
+    // Here we set the simulation time limit. It is computed in the omnetpp.ini file.
+    simtime_t simTimeLimit = par("simTimeLimitDouble");
+    scheduleAt(simTimeLimit, stopSimulation);
 
     if (ev.isGUI())
         getDisplayString().setTagArg("i2",0,"x_off");
@@ -163,6 +168,14 @@ void Server::handleMessage(cMessage *msg)
             getDisplayString().setTagArg("t",0, ("Receiving" + std::to_string(numIncomingTransmissions)).c_str() );
             getDisplayString().setTagArg("t",2,"#808000");
         }
+    }
+
+
+    // --- Simulation time limit reached: stop simulation
+
+    else if (msg==stopSimulation)
+    {
+        endSimulation();
     }
 
 

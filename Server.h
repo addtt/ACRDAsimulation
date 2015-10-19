@@ -45,6 +45,7 @@ class Server : public cSimpleModule
     AcrdaWnd rxWnd;    // Receive window
     cMessage *endRxEvent;
     cMessage *wndCompleted;
+    cMessage *stopSimulation; // This event controls the end of simulation.
 
     enum {IDLE=0, TRANSMISSION=1, COLLISION=2};
 
