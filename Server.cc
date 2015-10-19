@@ -28,6 +28,7 @@ Server::~Server()
     std::cout.flush();
     cancelAndDelete(endRxEvent);
     cancelAndDelete(wndCompleted);
+    cancelAndDelete(stopSimulation);
     rxWnd.clear();
 }
 
