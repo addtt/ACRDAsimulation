@@ -120,8 +120,14 @@ title('Throughput varying SF')
 xlabel('Spreading Factor'), ylabel('Throughput per user (pk/s/usr)')
 grid on, box on
 
+nslots_vs_thrput = sortrows([sysParams(4, :)', throughput']);
+
+figure, plot(nslots_vs_thrput(:,1), nslots_vs_thrput(:,2)/numHosts, '-d');
+title('Throughput varying numSlots')
+xlabel('Number of slots'), ylabel('Throughput per user (pk/s/usr)')
+grid on, box on
+
 
 fclose('all');
 clear ans BLUE_COLOR RED_COLOR YELL_COLOR filename i i_dummy file_idx fid indices fileList
 
-figure(3)
