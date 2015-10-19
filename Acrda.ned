@@ -25,12 +25,12 @@ network Acrda
     submodules:
         server: Server {
                 numHosts = numHosts;
-                nRep = nRep;
+                nRep = min(nRep,nSlots);
                 nSlots = nSlots;
                 tPkt = tPkt;
         }
         host[numHosts]: Host {
-                nRep = nRep;
+                nRep = min(nRep,nSlots);
                 nSlots = nSlots;
                 tPkt = tPkt;
                 arrivalType = arrivalType;
